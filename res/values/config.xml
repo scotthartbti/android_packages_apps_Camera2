@@ -43,4 +43,7 @@
         it set this value to false -->
     <bool name="cancelAutoFocusOnPreviewStopped">true</bool>
 
+    <!-- Stay in continuous focus even if touch-to-focus is used
+         This option doesn't make sense if wantsFocusModes is on -->
+    <bool name="useContinuosFocusForTouch">false</bool>
 </resources>

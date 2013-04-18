@@ -117,6 +117,9 @@ public class CameraUtil {
 
     private static boolean sCancelAutoFocusOnPreviewStopped;
 
+    // Do not change the focus mode when TTF is used
+    private static boolean sNoFocusModeChangeForTouch;
+
     // Fields for the show-on-maps-functionality
     private static final String MAPS_PACKAGE_NAME = "com.google.android.apps.maps";
     private static final String MAPS_CLASS_NAME = "com.google.android.maps.MapsActivity";
@@ -217,6 +220,8 @@ public class CameraUtil {
         sContinuousFocusNeedsAutoFocusCall =
             context.getResources().getBoolean(R.bool.continuousFocusNeedsAutoFocusCall);
         sSamsungHDRFormat = context.getResources().getBoolean(R.bool.needsSamsungHDRFormat);
+        sNoFocusModeChangeForTouch = context.getResources().getBoolean(
+                R.bool.useContinuosFocusForTouch);
     }
 
     public static int dpToPixel(int dp) {
@@ -233,6 +238,10 @@ public class CameraUtil {
 
     public static boolean needSamsungHDRFormat() {
         return sSamsungHDRFormat;
+    }
+
+    public static boolean noFocusModeChangeForTouch() {
+        return sNoFocusModeChangeForTouch;
     }
 
     // Rotates the bitmap by the specified degree.

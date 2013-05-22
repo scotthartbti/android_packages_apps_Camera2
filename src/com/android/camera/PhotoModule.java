@@ -1375,6 +1375,11 @@ public class PhotoModule
             showTapToFocusToast();
         }
 
+        // update GPS indicator
+        if (mLocationManager != null) {
+            mLocationManager.updateGpsIndicator();
+        }
+
         // need to re-initialize mGraphView to show histogram on rotate
         mGraphView = (GraphView)mRootView.findViewById(R.id.graph_view);
         if(mGraphView != null){
@@ -1934,6 +1939,7 @@ public class PhotoModule
             mCameraDevice = null;
             setCameraState(PREVIEW_STOPPED);
             mFocusManager.onCameraReleased();
+            mUI.hideGpsOnScreenIndicator();
         }
     }
 

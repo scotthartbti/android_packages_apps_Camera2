@@ -71,6 +71,8 @@ public class CameraSettings {
     public static final String KEY_VIDEO_FIRST_USE_HINT_SHOWN = "pref_video_first_use_hint_shown_key";
     public static final String KEY_PHOTOSPHERE_PICTURESIZE = "pref_photosphere_picturesize_key";
     public static final String KEY_STARTUP_MODULE_INDEX = "camera.startup_module";
+    public static final String KEY_SMART_CAPTURE_PHOTO = "pref_smart_capture_camera";
+    public static final String KEY_SMART_CAPTURE_VIDEO = "pref_smart_capture_video";
 
     public static final String KEY_VIDEO_ENCODER = "pref_camera_videoencoder_key";
     public static final String KEY_AUDIO_ENCODER = "pref_camera_audioencoder_key";

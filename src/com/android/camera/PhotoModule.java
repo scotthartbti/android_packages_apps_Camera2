@@ -577,6 +577,7 @@ public class PhotoModule
         mFocusManager.setMirror(mMirror);
         mFocusManager.setParameters(mInitialParams);
         setupPreview();
+        initSmartCapture();
 
         // reset zoom value index
         mZoomValue = 0;
@@ -1688,6 +1689,8 @@ public class PhotoModule
         UsageStatistics.onContentViewChanged(
                 UsageStatistics.COMPONENT_CAMERA, "PhotoModule");
 
+        initSmartCapture();
+
         Sensor gsensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         if (gsensor != null) {
             mSensorManager.registerListener(this, gsensor, SensorManager.SENSOR_DELAY_NORMAL);
@@ -1711,6 +1714,8 @@ public class PhotoModule
         if (msensor != null) {
             mSensorManager.unregisterListener(this, msensor);
         }
+
+        stopSmartCapture();
     }
 
     @Override
@@ -1950,6 +1955,29 @@ public class PhotoModule
     private void setupPreview() {
         mFocusManager.resetTouchFocus();
         startPreview();
+    }
+
+
+    private void initSmartCapture() {
+        if (mActivity.initSmartCapture(mPreferences, false)) {
+            startSmartCapture();
+        } else {
+            stopSmartCapture();
+        }
+    }
+
+    private void startSmartCapture() {
+        Sensor psensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+        if (psensor != null) {
+            mSensorManager.registerListener(this, psensor, SensorManager.SENSOR_DELAY_UI);
+        }
+    }
+
+    private void stopSmartCapture() {
+        Sensor psensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+        if (psensor != null) {
+            mSensorManager.unregisterListener(this, psensor);
+        }
     }
 
     /** This can run on a background thread, post any view updates to MainHandler. */
@@ -2660,6 +2688,7 @@ public class PhotoModule
             setCameraParametersWhenIdle(UPDATE_PARAM_PREFERENCE);
             mUI.updateOnScreenIndicators(mParameters, mPreferenceGroup,
                 mPreferences);
+            initSmartCapture();
         } else {
             mHandler.sendEmptyMessage(SET_PHOTO_UI_PARAMS);
         }
@@ -2803,6 +2832,17 @@ public class PhotoModule
             data = mGData;
         } else if (type == Sensor.TYPE_MAGNETIC_FIELD) {
             data = mMData;
+        } else if (type == Sensor.TYPE_PROXIMITY) {
+            int currentProx = (int) event.values[0];
+            if (currentProx == 0) {
+                if (mFirstTimeInitialized) {
+                    onShutterButtonFocus(true);
+                }
+                if (canTakePicture()) {
+                    onShutterButtonClick();
+                }
+            }
+            return;
         } else {
             // we should not be here.
             return;

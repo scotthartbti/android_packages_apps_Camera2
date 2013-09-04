@@ -496,6 +496,14 @@ public class CameraActivity extends Activity
         mFilmStripView.getController().goToNextItem();
     }
 
+    protected boolean initSmartCapture(ComboPreferences prefs, boolean isVideo) {
+        return prefs.getString(isVideo
+            ? CameraSettings.KEY_SMART_CAPTURE_VIDEO
+            : CameraSettings.KEY_SMART_CAPTURE_PHOTO,
+            getResources().getString(R.string.setting_off_value))
+            .equals(getResources().getString(R.string.setting_on_value));
+    }
+
     /**
      * If {@param visible} is false, this hides the action bar and switches the system UI
      * to lights-out mode.

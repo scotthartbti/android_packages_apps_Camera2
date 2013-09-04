@@ -66,6 +66,13 @@ public class PhotoMenu extends PieController
             item = makeSwitchItem(CameraSettings.KEY_CAMERA_HDR, true);
             mRenderer.addItem(item);
         }
+
+        // Smart capture.
+        if (group.findPreference(CameraSettings.KEY_SMART_CAPTURE_PHOTO) != null) {
+            item = makeSwitchItem(CameraSettings.KEY_SMART_CAPTURE_PHOTO, true);
+            mRenderer.addItem(item);
+        }
+
         // Exposure compensation.
         if (group.findPreference(CameraSettings.KEY_EXPOSURE) != null) {
             item = makeItem(CameraSettings.KEY_EXPOSURE);

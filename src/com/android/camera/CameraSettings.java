@@ -53,7 +53,8 @@ public class CameraSettings {
     public static final String KEY_VIDEO_QUALITY = "pref_video_quality_key";
     public static final String KEY_VIDEO_TIME_LAPSE_FRAME_INTERVAL = "pref_video_time_lapse_frame_interval_key";
     public static final String KEY_PICTURE_SIZE = "pref_camera_picturesize_key";
-    public static final String KEY_JPEG_QUALITY = "pref_camera_jpegquality_key";
+    public static final String KEY_CAMERA_JPEG_QUALITY = "pref_camera_jpegquality_key";
+    public static final String KEY_VIDEO_JPEG_QUALITY = "pref_video_jpegquality_key";
     public static final String KEY_FOCUS_MODE = "pref_camera_focusmode_key";
     public static final String KEY_FLASH_MODE = "pref_camera_flashmode_key";
     public static final String KEY_VIDEOCAMERA_FLASH_MODE = "pref_camera_video_flashmode_key";
@@ -297,7 +298,8 @@ public class CameraSettings {
         ListPreference redeyeReduction = group.findPreference(KEY_REDEYE_REDUCTION);
         ListPreference aeBracketing = group.findPreference(KEY_AE_BRACKET_HDR);
         ListPreference faceRC = group.findPreference(KEY_FACE_RECOGNITION);
-        ListPreference jpegQuality = group.findPreference(KEY_JPEG_QUALITY);
+        ListPreference jpegQualityCamera = group.findPreference(KEY_CAMERA_JPEG_QUALITY);
+        ListPreference jpegQualityVideo = group.findPreference(KEY_VIDEO_JPEG_QUALITY);
         ListPreference videoSnapSize = group.findPreference(KEY_VIDEO_SNAPSHOT_SIZE);
         ListPreference videoHdr = group.findPreference(KEY_VIDEO_HDR);
         ListPreference pictureFormat = group.findPreference(KEY_PICTURE_FORMAT);
@@ -625,7 +627,7 @@ public class CameraSettings {
         }
         if (version == 1) {
             // Change jpeg quality {65,75,85} to {normal,fine,superfine}
-            String quality = pref.getString(KEY_JPEG_QUALITY, "85");
+            String quality = pref.getString(KEY_CAMERA_JPEG_QUALITY, "85");
             if (quality.equals("65")) {
                 quality = "normal";
             } else if (quality.equals("75")) {
@@ -633,7 +635,7 @@ public class CameraSettings {
             } else {
                 quality = "superfine";
             }
-            editor.putString(KEY_JPEG_QUALITY, quality);
+            editor.putString(KEY_CAMERA_JPEG_QUALITY, quality);
             version = 2;
         }
         if (version == 2) {

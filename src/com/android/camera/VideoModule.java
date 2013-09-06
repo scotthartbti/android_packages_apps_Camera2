@@ -1955,9 +1955,12 @@ public class VideoModule implements CameraModule,
                 optimalSize.height);
 
         // Set JPEG quality.
-        int jpegQuality = CameraProfile.getJpegEncodingQualityParameter(mCameraId,
-                CameraProfile.QUALITY_HIGH);
-        mParameters.setJpegQuality(jpegQuality);
+        String jpegQuality = mPreferences.getString(
+                CameraSettings.KEY_VIDEO_JPEG_QUALITY,
+                mActivity.getString(R.string.pref_jpegquality_default));
+
+        mParameters.setJpegQuality(
+            JpegEncodingQualityMappings.getQualityNumber(jpegQuality));
 
         //Call Qcom related Camera Parameters
         qcomSetCameraParameters();

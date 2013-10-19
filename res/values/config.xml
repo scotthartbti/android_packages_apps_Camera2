@@ -32,4 +32,6 @@
 
     <!-- Enable ZSL -->
     <bool name="enableZSL">false</bool>
+    <!-- Continues focus mode needs autofocus call -->
+    <bool name="continuousFocusNeedsAutoFocusCall">false</bool>
 </resources>

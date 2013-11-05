@@ -164,7 +164,7 @@ public class VideoUI implements PieRenderer.PieListener,
             super.dismiss();
             popupDismissed();
             showUI();
-            mVideoMenu.popupDismissed(topLevelOnly);
+            mVideoMenu.popupDismissed();
 
             // Switch back into fullscreen/lights-out mode after popup
             // is dimissed.
@@ -413,18 +413,10 @@ public class VideoUI implements PieRenderer.PieListener,
     public boolean collapseCameraControls() {
         boolean ret = false;
         if (mPopup != null) {
-            dismissPopup(false);
+            dismissPopup();
             ret = true;
         }
         return ret;
-    }
-
-    public boolean removeTopLevelPopup() {
-        if (mPopup != null) {
-            dismissPopup(true);
-            return true;
-        }
-        return false;
     }
 
     public void enableCameraControls(boolean enable) {
@@ -596,11 +588,13 @@ public class VideoUI implements PieRenderer.PieListener,
         }
     }
 
-    public void dismissPopup(boolean topLevelOnly) {
-        // In review mode, we do not want to bring up the camera UI
-        if (mController.isInReviewMode()) return;
+    public void dismissPopup() {
+        dismissPopup(true);
+    }
+
+    private void dismissPopup(boolean fullScreen) {
         if (mPopup != null) {
-            mPopup.dismiss(topLevelOnly);
+            mPopup.dismiss();
         }
     }
 
@@ -610,23 +604,10 @@ public class VideoUI implements PieRenderer.PieListener,
 
     public void showPopup(AbstractSettingPopup popup) {
         hideUI();
-
         if (mPopup != null) {
             mPopup.dismiss(false);
         }
         mPopup = new SettingsPopup(popup);
-    }
-
-    public void onShowSwitcherPopup() {
-        hidePieRenderer();
-    }
-
-    public boolean hidePieRenderer() {
-        if (mPieRenderer != null && mPieRenderer.showsItems()) {
-            mPieRenderer.hide();
-            return true;
-        }
-        return false;
     }
 
     // disable preview gestures after shutter is pressed
@@ -717,6 +698,19 @@ public class VideoUI implements PieRenderer.PieListener,
         }
         if (mMenuButton != null) {
             mMenuButton.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    public boolean onBackPressed() {
+    if (mPieRenderer != null && mPieRenderer.showsItems()) {
+            mPieRenderer.hide();
+            return true;
+        }
+        if (mController.isVideoCaptureIntent()) {
+            //Should not reach here
+            return true;
+        } else {
+            return collapseCameraControls();
         }
     }
 

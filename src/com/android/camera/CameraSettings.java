@@ -838,4 +838,16 @@ public class CameraSettings {
         }
         return DEFAULT_VIDEO_DURATION * 1000;
     }
+
+    /**
+     * Set video size for certain cameras.
+     *
+     * @param params
+     * @param profile
+     */
+    public static void setEarlyVideoSize(Parameters params, CamcorderProfile profile) {
+        if (CameraUtil.needsEarlyVideoSize()) {
+            params.set("video-size", profile.videoFrameWidth + "x" + profile.videoFrameHeight);
+        }
+    }
 }

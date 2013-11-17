@@ -792,14 +792,17 @@ public class VideoModule implements CameraModule,
             return;
         }
         mParameters = mCameraDevice.getParameters();
-        if (mParameters.getSupportedVideoSizes() == null) {
+        if (mParameters.getSupportedVideoSizes() == null
+                || (!mActivity.getResources().getBoolean(
+                        R.bool.usePreferredPreviewSizeForEffects))) {
             mDesiredPreviewWidth = mProfile.videoFrameWidth;
             mDesiredPreviewHeight = mProfile.videoFrameHeight;
         } else { // Driver supports separates outputs for preview and video.
             List<Size> sizes = mParameters.getSupportedPreviewSizes();
             Size preferred = mParameters.getPreferredPreviewSizeForVideo();
-            if (preferred == null) {
-                    preferred = sizes.get(0);
+            if (mActivity.getResources().getBoolean(
+                    R.bool.ignorePreferredPreviewSizeForVideo) || preferred == null) {
+                preferred = sizes.get(0);
             }
             int product = preferred.width * preferred.height;
             Iterator<Size> it = sizes.iterator();

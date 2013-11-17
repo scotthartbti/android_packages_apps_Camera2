@@ -57,6 +57,7 @@ public class VideoMenu extends PieController
         // smart capture
         if (group.findPreference(CameraSettings.KEY_SMART_CAPTURE_VIDEO) != null) {
             item = makeSwitchItem(CameraSettings.KEY_SMART_CAPTURE_VIDEO, true);
+            item.setLabel(res.getString(R.string.pref_smart_capture_label).toUpperCase(locale));
             mRenderer.addItem(item);
         }
         // more options

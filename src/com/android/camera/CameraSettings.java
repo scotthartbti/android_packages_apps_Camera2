@@ -377,7 +377,22 @@ public class CameraSettings {
                     pictureFormat, getSupportedPictureFormatLists());
         }
 
+        if (contrast != null && !CameraUtil.isSupported(mParameters, "contrast") &&
+                !CameraUtil.isSupported(mParameters, "contrast-max")) {
+            removePreference(group, contrast.getKey());
+        }
+
+        if (sharpness != null && !CameraUtil.isSupported(mParameters, "sharpness") &&
+                !CameraUtil.isSupported(mParameters, "sharpness-max")) {
+            removePreference(group, sharpness.getKey());
+        }
+
+        if (saturation != null && !CameraUtil.isSupported(mParameters, "saturation") &&
+                !CameraUtil.isSupported(mParameters, "saturation-max")) {
+            removePreference(group, saturation.getKey());
+        }
     }
+
     private void initPreference(PreferenceGroup group) {
         ListPreference videoQuality = group.findPreference(KEY_VIDEO_QUALITY);
         ListPreference timeLapseInterval = group.findPreference(KEY_VIDEO_TIME_LAPSE_FRAME_INTERVAL);

@@ -1052,7 +1052,9 @@ public class PhotoModule
                             orientation, exif, mOnMediaSavedListener, mContentResolver, mPictureFormat);
                 }
                 // Animate capture with real jpeg data instead of a preview frame.
-                mUI.animateCapture(jpegData, orientation, mMirror);
+                if (mCameraState != LONGSHOT) {
+                    mUI.animateCapture(jpegData, orientation, mMirror);
+                }
             } else {
                 mJpegImageData = jpegData;
                 if (!mQuickCapture) {

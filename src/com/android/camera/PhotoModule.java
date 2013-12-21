@@ -578,6 +578,7 @@ public class PhotoModule
         mFocusManager.setParameters(mInitialParams);
         setupPreview();
         initSmartCapture();
+        initTrueView();
 
         // reset zoom value index
         mZoomValue = 0;
@@ -1695,6 +1696,7 @@ public class PhotoModule
                 UsageStatistics.COMPONENT_CAMERA, "PhotoModule");
 
         initSmartCapture();
+        initTrueView();
 
         Sensor gsensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         if (gsensor != null) {
@@ -1963,6 +1965,14 @@ public class PhotoModule
         startPreview();
     }
 
+    private void initTrueView() {
+        boolean trueViewState = mActivity.mTrueView;
+        mActivity.initTrueView(mPreferences);
+        if (trueViewState != mActivity.mTrueView) {
+            // Hack to re-init the surface
+            mUI.updatePreviewAspectRatio(1f, true);
+        }
+    }
 
     private void initSmartCapture() {
         if (mActivity.initSmartCapture(mPreferences, false)) {
@@ -2473,7 +2483,7 @@ public class PhotoModule
 
         if(optimalSize.width != 0 && optimalSize.height != 0) {
             mUI.updatePreviewAspectRatio((float) optimalSize.width
-                    / (float) optimalSize.height);
+                    / (float) optimalSize.height, false);
         }
         Log.v(TAG, "Preview size is " + optimalSize.width + "x" + optimalSize.height);
 
@@ -2698,6 +2708,7 @@ public class PhotoModule
             mUI.updateOnScreenIndicators(mParameters, mPreferenceGroup,
                 mPreferences);
             initSmartCapture();
+            initTrueView();
         } else {
             mHandler.sendEmptyMessage(SET_PHOTO_UI_PARAMS);
         }

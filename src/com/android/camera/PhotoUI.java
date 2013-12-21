@@ -267,7 +267,7 @@ public class PhotoUI implements PieListener,
         mSurfaceTextureSizeListener = listener;
     }
 
-    public void updatePreviewAspectRatio(float aspectRatio) {
+    public void updatePreviewAspectRatio(float aspectRatio, boolean isTrueView) {
         if (aspectRatio <= 0) {
             Log.e(TAG, "Invalid aspect ratio: " + aspectRatio);
             return;
@@ -277,7 +277,7 @@ public class PhotoUI implements PieListener,
         }
 
         if (mAspectRatio != aspectRatio) {
-            mAspectRatio = aspectRatio;
+            if (!isTrueView) mAspectRatio = aspectRatio;
             // Update transform matrix with the new aspect ratio.
             if (mPreviewWidth != 0 && mPreviewHeight != 0) {
                 setTransformMatrix(mPreviewWidth, mPreviewHeight);
@@ -289,7 +289,7 @@ public class PhotoUI implements PieListener,
         mMatrix = mTextureView.getTransform(mMatrix);
         float scaleX = 1f, scaleY = 1f;
         float scaledTextureWidth, scaledTextureHeight;
-        if (mOrientationResize){
+        if (mOrientationResize && !mActivity.mTrueView) {
             scaledTextureWidth = height * mAspectRatio;
             if(scaledTextureWidth > width){
                 scaledTextureWidth = width;
@@ -299,15 +299,15 @@ public class PhotoUI implements PieListener,
             }
         } else {
             if (width > height) {
-                scaledTextureWidth = Math.max(width,
-                        (int) (height * mAspectRatio));
-                scaledTextureHeight = Math.max(height,
-                        (int)(width / mAspectRatio));
+                scaledTextureWidth = mActivity.mTrueView ? (height * mAspectRatio)
+                        : Math.max(width,(int) (height * mAspectRatio));
+                scaledTextureHeight = mActivity.mTrueView ? height
+                        : Math.max(height,(int)(width / mAspectRatio));
             } else {
-                scaledTextureWidth = Math.max(width,
-                        (int) (height / mAspectRatio));
-                scaledTextureHeight = Math.max(height,
-                        (int) (width * mAspectRatio));
+                scaledTextureWidth = mActivity.mTrueView ? width
+                        : Math.max(width,(int) (height / mAspectRatio));
+                scaledTextureHeight = mActivity.mTrueView ? (width * mAspectRatio)
+                        : Math.max(height,(int) (width * mAspectRatio));
             }
         }
 

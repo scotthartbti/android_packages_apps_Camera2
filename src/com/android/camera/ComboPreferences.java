@@ -102,6 +102,7 @@ public class ComboPreferences implements
         movePrefFrom(prefMap, CameraSettings.KEY_VIDEO_TIME_LAPSE_FRAME_INTERVAL, src);
         movePrefFrom(prefMap, CameraSettings.KEY_CAMERA_ID, src);
         movePrefFrom(prefMap, CameraSettings.KEY_RECORD_LOCATION, src);
+        movePrefFrom(prefMap, CameraSettings.KEY_TRUE_VIEW, src);
         movePrefFrom(prefMap, CameraSettings.KEY_CAMERA_FIRST_USE_HINT_SHOWN, src);
         movePrefFrom(prefMap, CameraSettings.KEY_VIDEO_FIRST_USE_HINT_SHOWN, src);
         movePrefFrom(prefMap, CameraSettings.KEY_VIDEO_EFFECT, src);
@@ -146,6 +147,7 @@ public class ComboPreferences implements
         return key.equals(CameraSettings.KEY_VIDEO_TIME_LAPSE_FRAME_INTERVAL)
                 || key.equals(CameraSettings.KEY_CAMERA_ID)
                 || key.equals(CameraSettings.KEY_RECORD_LOCATION)
+                || key.equals(CameraSettings.KEY_TRUE_VIEW)
                 || key.equals(CameraSettings.KEY_CAMERA_FIRST_USE_HINT_SHOWN)
                 || key.equals(CameraSettings.KEY_VIDEO_FIRST_USE_HINT_SHOWN)
                 || key.equals(CameraSettings.KEY_VIDEO_EFFECT)

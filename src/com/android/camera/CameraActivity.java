@@ -128,6 +128,7 @@ public class CameraActivity extends Activity
 
     /** Whether onResume should reset the view to the preview. */
     private boolean mResetToPreviewOnResume = true;
+    public static boolean mTrueView = false;
 
     // Supported operations at FilmStripView. Different data has different
     // set of supported operations.
@@ -502,6 +503,16 @@ public class CameraActivity extends Activity
             : CameraSettings.KEY_SMART_CAPTURE_PHOTO,
             getResources().getString(R.string.setting_off_value))
             .equals(getResources().getString(R.string.setting_on_value));
+    }
+
+    protected void initTrueView(ComboPreferences prefs) {
+        if (prefs.getString(CameraSettings.KEY_TRUE_VIEW,
+            getResources().getString(R.string.setting_off_value))
+            .equals(getResources().getString(R.string.setting_on_value))) {
+            mTrueView = true;
+        } else {
+            mTrueView = false;
+        }
     }
 
     /**

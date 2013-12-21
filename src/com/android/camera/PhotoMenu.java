@@ -193,6 +193,12 @@ public class PhotoMenu extends PieController
                 item.setEnabled(false);
             }
         }
+        // TrueView
+        if (group.findPreference(CameraSettings.KEY_TRUE_VIEW) != null) {
+            item = makeSwitchItem(CameraSettings.KEY_TRUE_VIEW, true);
+            item.setLabel(res.getString(R.string.pref_true_view_label).toUpperCase(locale));
+            settings.addItem(item);
+        }
         // Image size.
         final ListPreference sizePref = group.findPreference(CameraSettings.KEY_PICTURE_SIZE);
         if (sizePref != null) {

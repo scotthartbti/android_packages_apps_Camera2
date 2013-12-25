@@ -24,4 +24,7 @@
     <bool name="needsEarlyVideoSize">false</bool>
     <!-- Samsung Camcorder Mode -->
     <bool name="needsSamsungCamMode">false</bool>
+
+    <!-- Enable ZSL -->
+    <bool name="enableZSL">false</bool>
 </resources>

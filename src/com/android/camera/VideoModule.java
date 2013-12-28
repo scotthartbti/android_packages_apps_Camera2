@@ -733,12 +733,12 @@ public class VideoModule implements CameraModule,
         String videoQuality = mPreferences.getString(CameraSettings.KEY_VIDEO_QUALITY,
                         null);
         if (videoQuality == null) {
-             mParameters = mCameraDevice.getParameters();
+            mParameters = mCameraDevice.getParameters();
             String defaultQuality = mActivity.getResources().getString(
                     R.string.pref_video_quality_default);
             boolean hasProfile = CamcorderProfile.hasProfile(
                      Integer.parseInt(defaultQuality));
-            if (hasProfile == true){
+            if (hasProfile == true) {
                 videoQuality = defaultQuality;
             } else {
                 // check for highest quality if default quality is not supported

@@ -404,8 +404,8 @@ public class PhotoModule
                     // skin tone ie enabled only for party and portrait BSM
                     // when color effects are not enabled
                     String colorEffect = mPreferences.getString(
-                        CameraSettings.KEY_COLOR_EFFECT,
-                        mActivity.getString(R.string.pref_camera_coloreffect_default));
+                        CameraSettings.KEY_CAMERA_COLOR_EFFECT,
+                        mActivity.getString(R.string.pref_coloreffect_default));
                     if((Parameters.SCENE_MODE_PARTY.equals(mSceneMode) ||
                         Parameters.SCENE_MODE_PORTRAIT.equals(mSceneMode))&&
                         (Parameters.EFFECT_NONE.equals(colorEffect))) {
@@ -2100,8 +2100,7 @@ public class PhotoModule
         return mRestartPreview;
     }
 
-    private void qcomUpdateCameraParametersPreference() {
-        //qcom Related Parameter update
+    private void updateAdditionalCameraParametersPreference() {
         if (Parameters.SCENE_MODE_AUTO.equals(mSceneMode)) {
             // Set Touch AF/AEC parameter.
             String touchAfAec = mPreferences.getString(
@@ -2179,8 +2178,8 @@ public class PhotoModule
         }
         // Set color effect parameter.
         String colorEffect = mPreferences.getString(
-                CameraSettings.KEY_COLOR_EFFECT,
-                mActivity.getString(R.string.pref_camera_coloreffect_default));
+                CameraSettings.KEY_CAMERA_COLOR_EFFECT,
+                mActivity.getString(R.string.pref_coloreffect_default));
         Log.v(TAG, "Color effect value =" + colorEffect);
         if (CameraUtil.isSupported(colorEffect, mParameters.getSupportedColorEffects())) {
             mParameters.setColorEffect(colorEffect);
@@ -2577,8 +2576,8 @@ public class PhotoModule
         if (mContinuousFocusSupported && ApiHelper.HAS_AUTO_FOCUS_MOVE_CALLBACK) {
             updateAutoFocusMoveCallback();
         }
-        //QCom related parameters updated here.
-        qcomUpdateCameraParametersPreference();
+        // update additional parameters.
+        updateAdditionalCameraParametersPreference();
         return doGcamModeSwitch;
     }
 
@@ -2708,8 +2707,8 @@ public class PhotoModule
             // skin tone is enabled only for party and portrait BSM
             // when color effects are not enabled
             String colorEffect = mPreferences.getString(
-                CameraSettings.KEY_COLOR_EFFECT,
-                mActivity.getString(R.string.pref_camera_coloreffect_default));
+                CameraSettings.KEY_CAMERA_COLOR_EFFECT,
+                mActivity.getString(R.string.pref_coloreffect_default));
             if((Parameters.SCENE_MODE_PARTY.equals(mSceneMode) ||
                 Parameters.SCENE_MODE_PORTRAIT.equals(mSceneMode)) &&
                 (Parameters.EFFECT_NONE.equals(colorEffect))) {

@@ -140,10 +140,11 @@ public class PhotoMenu extends PieController
             more.addItem(item);
         }
         // Color effects.
-        if (group.findPreference(CameraSettings.KEY_COLOR_EFFECT) != null) {
+        if (group.findPreference(CameraSettings.KEY_CAMERA_COLOR_EFFECT) != null) {
             item = makeItem(R.drawable.ic_color_effect);
-            final ListPreference effectPref = group.findPreference(CameraSettings.KEY_COLOR_EFFECT);
-            item.setLabel(res.getString(R.string.pref_camera_coloreffect_title).toUpperCase(locale));
+            final ListPreference effectPref =
+                    group.findPreference(CameraSettings.KEY_CAMERA_COLOR_EFFECT);
+            item.setLabel(res.getString(R.string.pref_coloreffect_title).toUpperCase(locale));
             item.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(PieItem item) {

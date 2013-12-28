@@ -81,7 +81,8 @@ public class CameraSettings {
     public static final String KEY_POWER_MODE = "pref_camera_powermode_key";
     public static final String KEY_PICTURE_FORMAT = "pref_camera_pictureformat_key";
     public static final String KEY_ZSL = "pref_camera_zsl_key";
-    public static final String KEY_COLOR_EFFECT = "pref_camera_coloreffect_key";
+    public static final String KEY_CAMERA_COLOR_EFFECT = "pref_camera_coloreffect_key";
+    public static final String KEY_VIDEO_COLOR_EFFECT = "pref_video_coloreffect_key";
     public static final String KEY_FACE_DETECTION = "pref_camera_facedetection_key";
     public static final String KEY_TOUCH_AF_AEC = "pref_camera_touchafaec_key";
     public static final String KEY_SELECTABLE_ZONE_AF = "pref_camera_selectablezoneaf_key";
@@ -282,7 +283,8 @@ public class CameraSettings {
         //Qcom Preference add here
         ListPreference powerMode = group.findPreference(KEY_POWER_MODE);
         ListPreference zsl = group.findPreference(KEY_ZSL);
-        ListPreference colorEffect = group.findPreference(KEY_COLOR_EFFECT);
+        ListPreference colorEffectCamera = group.findPreference(KEY_CAMERA_COLOR_EFFECT);
+        ListPreference colorEffectVideo = group.findPreference(KEY_VIDEO_COLOR_EFFECT);
         ListPreference faceDetection = group.findPreference(KEY_FACE_DETECTION);
         ListPreference touchAfAec = group.findPreference(KEY_TOUCH_AF_AEC);
         ListPreference selectableZoneAf = group.findPreference(KEY_SELECTABLE_ZONE_AF);
@@ -338,9 +340,14 @@ public class CameraSettings {
                     videoHdr, mParameters.getSupportedVideoHDRModes());
         }
 
-        if (colorEffect != null) {
+        if (colorEffectCamera != null) {
             filterUnsupportedOptions(group,
-                    colorEffect, mParameters.getSupportedColorEffects());
+                    colorEffectCamera, mParameters.getSupportedColorEffects());
+        }
+
+        if (colorEffectVideo != null) {
+            filterUnsupportedOptions(group,
+                    colorEffectVideo, mParameters.getSupportedColorEffects());
         }
 
         if (aeBracketing != null) {

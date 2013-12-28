@@ -278,28 +278,28 @@
      <string name="pref_camera_antibanding_entry_3">Auto</string>
 
         <!-- Default color effect setting. -->
-    <string name="pref_camera_coloreffect_default" translatable="false">none</string>
+    <string name="pref_coloreffect_default" translatable="false">none</string>
 
     <!-- Settings screen, Select Color effect title -->
-    <string name="pref_camera_coloreffect_title">Color effect</string>
+    <string name="pref_coloreffect_title">Color effect</string>
 
     <!-- Settings screen, Color effect dialog radio button choices -->
-    <string name="pref_camera_coloreffect_entry_none">None</string>
-    <string name="pref_camera_coloreffect_entry_mono">Mono</string>
-    <string name="pref_camera_coloreffect_entry_sepia">Sepia</string>
-    <string name="pref_camera_coloreffect_entry_negative">Negative</string>
+    <string name="pref_coloreffect_entry_none">None</string>
+    <string name="pref_coloreffect_entry_mono">Mono</string>
+    <string name="pref_coloreffect_entry_sepia">Sepia</string>
+    <string name="pref_coloreffect_entry_negative">Negative</string>
     <!-- Color effect that overexposes and reverses some of the tones. -->
-    <string name="pref_camera_coloreffect_entry_solarize">Solarize</string>
-    <string name="pref_camera_coloreffect_entry_posterize">Posterize</string>
-    <string name="pref_camera_coloreffect_entry_aqua">Aqua</string>
-    <string name="pref_camera_coloreffect_entry_emboss">Emboss</string>
-    <string name="pref_camera_coloreffect_entry_sketch">Sketch</string>
-    <string name="pref_camera_coloreffect_entry_neon">Neon</string>
-    <string name="pref_camera_coloreffect_entry_pastel">Pastel</string>
-    <string name="pref_camera_coloreffect_entry_mosaic">Mosaic</string>
-    <string name="pref_camera_coloreffect_entry_redtint">Red tint</string>
-    <string name="pref_camera_coloreffect_entry_bluetint">Blue tint</string>
-    <string name="pref_camera_coloreffect_entry_greentint">Green tint</string>
+    <string name="pref_coloreffect_entry_solarize">Solarize</string>
+    <string name="pref_coloreffect_entry_posterize">Posterize</string>
+    <string name="pref_coloreffect_entry_aqua">Aqua</string>
+    <string name="pref_coloreffect_entry_emboss">Emboss</string>
+    <string name="pref_coloreffect_entry_sketch">Sketch</string>
+    <string name="pref_coloreffect_entry_neon">Neon</string>
+    <string name="pref_coloreffect_entry_pastel">Pastel</string>
+    <string name="pref_coloreffect_entry_mosaic">Mosaic</string>
+    <string name="pref_coloreffect_entry_redtint">Red tint</string>
+    <string name="pref_coloreffect_entry_bluetint">Blue tint</string>
+    <string name="pref_coloreffect_entry_greentint">Green tint</string>
 
     <!-- Default Touch AF/AEC setting. Do not translate. -->
     <string name="pref_camera_touchafaec_default">touch-on</string>
@@ -688,13 +688,13 @@
     <string name="pref_camera_focusmode_entry_hyperfocal">Hyperfocal</string>
 
     <!-- Color effects -->
-    <string name="pref_camera_coloreffect_entry_washed">Washed</string>
-    <string name="pref_camera_coloreffect_entry_vintage_warm">Vintage warm</string>
-    <string name="pref_camera_coloreffect_entry_vintage_cold">Vintage cold</string>
-    <string name="pref_camera_coloreffect_entry_point_blue">Point blue</string>
-    <string name="pref_camera_coloreffect_entry_point_green">Point green</string>
-    <string name="pref_camera_coloreffect_entry_point_red_yellow">Point red-yellow</string>
-    <string name="pref_camera_coloreffect_entry_cartoonize">Cartoonize</string>
+    <string name="pref_coloreffect_entry_washed">Washed</string>
+    <string name="pref_coloreffect_entry_vintage_warm">Vintage warm</string>
+    <string name="pref_coloreffect_entry_vintage_cold">Vintage cold</string>
+    <string name="pref_coloreffect_entry_point_blue">Point blue</string>
+    <string name="pref_coloreffect_entry_point_green">Point green</string>
+    <string name="pref_coloreffect_entry_point_red_yellow">Point red-yellow</string>
+    <string name="pref_coloreffect_entry_cartoonize">Cartoonize</string>
 
     <!-- The label for Smart capture. -->
     <string name="pref_smart_capture_label">SMART CAPTURE</string>

@@ -36,17 +36,13 @@ public class VideoMenu extends PieController
     private static String TAG = "CAM_VideoMenu";
 
     private VideoUI mUI;
-    private String[] mOtherKeys1;
-    private String[] mOtherKeys2;
-
-    private AbstractSettingPopup mPopup1;
-    private AbstractSettingPopup mPopup2;
+    private String[] mOtherKeys;
+    private AbstractSettingPopup mPopup;
 
     private static final int POPUP_NONE = 0;
     private static final int POPUP_FIRST_LEVEL = 1;
     private static final int POPUP_SECOND_LEVEL = 2;
     private int mPopupStatus;
-    private int popupNum;
     private CameraActivity mActivity;
 
     public VideoMenu(CameraActivity activity, VideoUI ui, PieRenderer pie) {
@@ -55,65 +51,37 @@ public class VideoMenu extends PieController
         mActivity = activity;
     }
 
+
     public void initialize(PreferenceGroup group) {
         super.initialize(group);
-        mPopup1 = null;
-        mPopup2 = null;
-        popupNum = 0;
+        mPopup = null;
         mPopupStatus = POPUP_NONE;
         PieItem item = null;
+        // white balance
+        if (group.findPreference(CameraSettings.KEY_WHITE_BALANCE) != null) {
+            item = makeItem(CameraSettings.KEY_WHITE_BALANCE);
+            mRenderer.addItem(item);
+        }
         // settings popup
-        mOtherKeys1 = new String[] {
-                CameraSettings.KEY_DIS,
+        mOtherKeys = new String[] {
                 CameraSettings.KEY_VIDEO_EFFECT,
                 CameraSettings.KEY_VIDEO_TIME_LAPSE_FRAME_INTERVAL,
                 CameraSettings.KEY_VIDEO_QUALITY,
-                CameraSettings.KEY_VIDEO_ENCODER,
-                CameraSettings.KEY_AUDIO_ENCODER,
-                CameraSettings.KEY_VIDEO_DURATION,
                 CameraSettings.KEY_RECORD_LOCATION
         };
-
-       //settings popup
-       mOtherKeys2 = new String[] {
-                CameraSettings.KEY_COLOR_EFFECT,
-                CameraSettings.KEY_VIDEO_HDR,
-                CameraSettings.KEY_POWER_MODE,
-                CameraSettings.KEY_WHITE_BALANCE,
-                CameraSettings.KEY_VIDEO_HIGH_FRAME_RATE,
-                CameraSettings.KEY_VIDEOCAMERA_FLASH_MODE,
-       };
-
-        PieItem item1 = makeItem(R.drawable.ic_settings_holo_light);
-        item1.setLabel(mActivity.getResources().getString(R.string.camera_menu_more_label));
-        item1.setOnClickListener(new OnClickListener() {
+        item = makeItem(R.drawable.ic_settings_holo_light);
+        item.setLabel(mActivity.getResources().getString(R.string.camera_menu_settings_label));
+        item.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(PieItem item) {
-                if (mPopup1 == null || mPopupStatus != POPUP_FIRST_LEVEL) {
+                if (mPopup == null || mPopupStatus != POPUP_FIRST_LEVEL) {
                     initializePopup();
                     mPopupStatus = POPUP_FIRST_LEVEL;
                 }
-                mUI.showPopup(mPopup1);
-                popupNum = 1;
+                mUI.showPopup(mPopup);
             }
         });
-        mRenderer.addItem(item1);
-
-        PieItem item2 = makeItem(R.drawable.ic_settings_holo_light);
-        item2.setLabel(mActivity.getResources().getString(R.string.camera_menu_more_label));
-        item2.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(PieItem item) {
-                if (mPopup2 == null || mPopupStatus != POPUP_FIRST_LEVEL) {
-                    initializePopup();
-                    mPopupStatus = POPUP_FIRST_LEVEL;
-                }
-                mUI.showPopup(mPopup2);
-                popupNum = 2;
-            }
-        });
-        mRenderer.addItem(item2);
-
+        mRenderer.addItem(item);
         // camera switcher
         if (group.findPreference(CameraSettings.KEY_CAMERA_ID) != null) {
             item = makeItem(R.drawable.ic_switch_back);
@@ -146,38 +114,37 @@ public class VideoMenu extends PieController
             });
             mRenderer.addItem(item);
         }
+        // flash
+        if (group.findPreference(CameraSettings.KEY_VIDEOCAMERA_FLASH_MODE) != null) {
+            item = makeItem(CameraSettings.KEY_VIDEOCAMERA_FLASH_MODE);
+            mRenderer.addItem(item);
+        }
     }
 
     @Override
     public void reloadPreferences() {
         super.reloadPreferences();
-        if (mPopup1 != null) {
-            mPopup1.reloadPreference();
-        }
-        if (mPopup2 != null) {
-            mPopup2.reloadPreference();
+        if (mPopup != null) {
+            mPopup.reloadPreference();
         }
     }
 
     @Override
     public void overrideSettings(final String ... keyvalues) {
         super.overrideSettings(keyvalues);
-        if (((mPopup1 == null) && (mPopup2 == null)) || mPopupStatus != POPUP_FIRST_LEVEL) {
+        if (mPopup == null || mPopupStatus != POPUP_FIRST_LEVEL) {
             mPopupStatus = POPUP_FIRST_LEVEL;
             initializePopup();
         }
-        ((MoreSettingPopup) mPopup1).overrideSettings(keyvalues);
-        ((MoreSettingPopup) mPopup2).overrideSettings(keyvalues);
+        ((MoreSettingPopup) mPopup).overrideSettings(keyvalues);
     }
 
     @Override
     // Hit when an item in the second-level popup gets selected
     public void onListPrefChanged(ListPreference pref) {
-        if (mPopup1 != null && mPopup2 != null) {
+        if (mPopup != null) {
             if (mPopupStatus == POPUP_SECOND_LEVEL) {
                 mUI.dismissPopup(true);
-                mPopup1.reloadPreference();
-                mPopup2.reloadPreference();
             }
         }
         super.onSettingChanged(pref);
@@ -187,21 +154,15 @@ public class VideoMenu extends PieController
         LayoutInflater inflater = (LayoutInflater) mActivity.getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE);
 
-        MoreSettingPopup popup1 = (MoreSettingPopup) inflater.inflate(
+        MoreSettingPopup popup = (MoreSettingPopup) inflater.inflate(
                 R.layout.more_setting_popup, null, false);
-        popup1.setSettingChangedListener(this);
-        popup1.initialize(mPreferenceGroup, mOtherKeys1);
+        popup.setSettingChangedListener(this);
+        popup.initialize(mPreferenceGroup, mOtherKeys);
         if (mActivity.isSecureCamera()) {
             // Prevent location preference from getting changed in secure camera mode
-            popup1.setPreferenceEnabled(CameraSettings.KEY_RECORD_LOCATION, false);
+            popup.setPreferenceEnabled(CameraSettings.KEY_RECORD_LOCATION, false);
         }
-        mPopup1 = popup1;
-
-        MoreSettingPopup popup2 = (MoreSettingPopup) inflater.inflate(
-                R.layout.more_setting_popup, null, false);
-        popup2.setSettingChangedListener(this);
-        popup2.initialize(mPreferenceGroup, mOtherKeys2);
-        mPopup2 = popup2;
+        mPopup = popup;
     }
 
     public void popupDismissed(boolean topPopupOnly) {
@@ -209,12 +170,7 @@ public class VideoMenu extends PieController
         if (mPopupStatus == POPUP_SECOND_LEVEL) {
             initializePopup();
             mPopupStatus = POPUP_FIRST_LEVEL;
-            if (topPopupOnly) {
-                if(popupNum == 1) mUI.showPopup(mPopup1);
-                else if(popupNum == 2) mUI.showPopup(mPopup2);
-            }
-        } else {
-            initializePopup();
+            if (topPopupOnly) mUI.showPopup(mPopup);
         }
     }
 
@@ -233,17 +189,16 @@ public class VideoMenu extends PieController
             timeInterval.initialize((IconListPreference) pref);
             timeInterval.setSettingChangedListener(this);
             mUI.dismissPopup(true);
-            mPopup1 = timeInterval;
+            mPopup = timeInterval;
         } else {
             ListPrefSettingPopup basic = (ListPrefSettingPopup) inflater.inflate(
                     R.layout.list_pref_setting_popup, null, false);
             basic.initialize(pref);
             basic.setSettingChangedListener(this);
             mUI.dismissPopup(true);
-            mPopup1 = basic;
+            mPopup = basic;
         }
-        mUI.showPopup(mPopup1);
+        mUI.showPopup(mPopup);
         mPopupStatus = POPUP_SECOND_LEVEL;
     }
-
 }

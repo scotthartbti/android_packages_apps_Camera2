@@ -277,7 +277,7 @@ public class CameraSettings {
         return split(str);
     }
 
-    private void qcomInitPreferences(PreferenceGroup group){
+    private void initAdditionalPreferences(PreferenceGroup group){
         //Qcom Preference add here
         ListPreference powerMode = group.findPreference(KEY_POWER_MODE);
         ListPreference zsl = group.findPreference(KEY_ZSL);
@@ -469,7 +469,7 @@ public class CameraSettings {
                 !GcamHelper.hasGcamCapture() || isFrontCamera)) {
             removePreference(group, cameraHdrPlus.getKey());
         }
-        qcomInitPreferences(group);
+        initAdditionalPreferences(group);
     }
 
     private void buildExposureCompensation(

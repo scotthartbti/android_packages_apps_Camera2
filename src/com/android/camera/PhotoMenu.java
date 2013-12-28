@@ -70,6 +70,7 @@ public class PhotoMenu extends PieController
         // Smart capture.
         if (group.findPreference(CameraSettings.KEY_SMART_CAPTURE_PHOTO) != null) {
             item = makeSwitchItem(CameraSettings.KEY_SMART_CAPTURE_PHOTO, true);
+            item.setLabel(res.getString(R.string.pref_smart_capture_label).toUpperCase(locale));
             mRenderer.addItem(item);
         }
 
@@ -79,6 +80,24 @@ public class PhotoMenu extends PieController
             item.setLabel(res.getString(R.string.pref_exposure_label));
             mRenderer.addItem(item);
         }
+        // Color effects.
+        item = makeItem(R.drawable.ic_color_effect);
+        final ListPreference effectPref = group.findPreference(CameraSettings.KEY_COLOR_EFFECT);
+        item.setLabel(res.getString(R.string.pref_camera_coloreffect_title).toUpperCase(locale));
+        item.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(PieItem item) {
+                ListPrefSettingPopup popup =
+                    (ListPrefSettingPopup) mActivity.getLayoutInflater().inflate(
+                    R.layout.list_pref_setting_popup, null, false);
+                popup.initialize(effectPref);
+                popup.setSettingChangedListener(PhotoMenu.this);
+                mUI.dismissPopup();
+                mPopup = popup;
+                mUI.showPopup(mPopup);
+            }
+        });
+        mRenderer.addItem(item);
         // More settings.
         PieItem more = makeItem(R.drawable.ic_settings_holo_light);
         more.setLabel(res.getString(R.string.camera_menu_more_label));
@@ -146,8 +165,9 @@ public class PhotoMenu extends PieController
         item.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(PieItem item) {
-                ListPrefSettingPopup popup = (ListPrefSettingPopup) mActivity.getLayoutInflater().inflate(
-                        R.layout.list_pref_setting_popup, null, false);
+                ListPrefSettingPopup popup =
+                    (ListPrefSettingPopup) mActivity.getLayoutInflater().inflate(
+                    R.layout.list_pref_setting_popup, null, false);
                 popup.initialize(sizePref);
                 popup.setSettingChangedListener(PhotoMenu.this);
                 mUI.dismissPopup();

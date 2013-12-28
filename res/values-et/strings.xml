@@ -121,8 +121,6 @@
     <string name="setting_off" msgid="4480039384202951946">"Väljas"</string>
     <string name="setting_on" msgid="8602246224465348901">"Sees"</string>
     <string name="pref_video_quality_title" msgid="8245379279801096922">"Video kvaliteet"</string>
-    <string name="pref_video_quality_entry_high" msgid="8664038216234805914">"Kõrge"</string>
-    <string name="pref_video_quality_entry_low" msgid="7258507152393173784">"Madal"</string>
     <string name="pref_video_time_lapse_frame_interval_title" msgid="6245716906744079302">"Aeglustus"</string>
     <string name="pref_camera_settings_category" msgid="2576236450859613120">"Kaamera seaded"</string>
     <string name="pref_camcorder_settings_category" msgid="460313486231965141">"Videokaamera seaded"</string>

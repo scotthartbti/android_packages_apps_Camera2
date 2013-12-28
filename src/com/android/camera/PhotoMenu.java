@@ -161,10 +161,22 @@ public class PhotoMenu extends PieController
         }
         // Scene mode.
         if (group.findPreference(CameraSettings.KEY_SCENE_MODE) != null) {
-            IconListPreference pref = (IconListPreference) group.findPreference(
-                    CameraSettings.KEY_SCENE_MODE);
-            pref.setUseSingleIcon(true);
-            item = makeItem(CameraSettings.KEY_SCENE_MODE);
+            item = makeItem(R.drawable.ic_sce);
+            final ListPreference effectPref = group.findPreference(CameraSettings.KEY_SCENE_MODE);
+            item.setLabel(res.getString(R.string.pref_camera_scenemode_title).toUpperCase(locale));
+            item.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(PieItem item) {
+                    ListPrefSettingPopup popup =
+                        (ListPrefSettingPopup) mActivity.getLayoutInflater().inflate(
+                        R.layout.list_pref_setting_popup, null, false);
+                    popup.initialize(effectPref);
+                    popup.setSettingChangedListener(PhotoMenu.this);
+                    mUI.dismissPopup();
+                    mPopup = popup;
+                    mUI.showPopup(mPopup);
+                }
+            });
             more.addItem(item);
         }
         // Settings

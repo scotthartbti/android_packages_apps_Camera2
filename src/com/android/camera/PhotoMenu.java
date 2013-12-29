@@ -139,6 +139,27 @@ public class PhotoMenu extends PieController
             item.setLabel(res.getString(R.string.pref_camera_whitebalance_label));
             more.addItem(item);
         }
+        // ISO mode
+        if (group.findPreference(CameraSettings.KEY_ISO) != null) {
+            item = makeItem(R.drawable.ic_iso);
+            final ListPreference isoPref =
+                group.findPreference(CameraSettings.KEY_ISO);
+            item.setLabel(res.getString(R.string.pref_camera_iso_title).toUpperCase(locale));
+            item.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(PieItem item) {
+                    ListPrefSettingPopup popup =
+                        (ListPrefSettingPopup) mActivity.getLayoutInflater().inflate(
+                        R.layout.list_pref_setting_popup, null, false);
+                    popup.initialize(isoPref);
+                    popup.setSettingChangedListener(PhotoMenu.this);
+                    mUI.dismissPopup();
+                    mPopup = popup;
+                    mUI.showPopup(mPopup);
+                }
+            });
+            more.addItem(item);
+        }
         // Color effects.
         if (group.findPreference(CameraSettings.KEY_CAMERA_COLOR_EFFECT) != null) {
             item = makeItem(R.drawable.ic_color_effect);

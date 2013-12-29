@@ -241,6 +241,27 @@ public class PhotoMenu extends PieController
             });
             settings.addItem(item);
         }
+        // Focus mode
+        if (group.findPreference(CameraSettings.KEY_FOCUS_MODE) != null) {
+            item = makeItem(R.drawable.ic_focus);
+            final ListPreference focusPref =
+                group.findPreference(CameraSettings.KEY_FOCUS_MODE);
+            item.setLabel(res.getString(R.string.pref_camera_focusmode_title).toUpperCase(locale));
+            item.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(PieItem item) {
+                    ListPrefSettingPopup popup =
+                        (ListPrefSettingPopup) mActivity.getLayoutInflater().inflate(
+                        R.layout.list_pref_setting_popup, null, false);
+                    popup.initialize(focusPref);
+                    popup.setSettingChangedListener(PhotoMenu.this);
+                    mUI.dismissPopup();
+                    mPopup = popup;
+                    mUI.showPopup(mPopup);
+                }
+            });
+            settings.addItem(item);
+        }
     }
 
     @Override

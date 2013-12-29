@@ -1958,8 +1958,7 @@ public class VideoModule implements CameraModule,
                 CameraSettings.KEY_VIDEO_JPEG_QUALITY,
                 mActivity.getString(R.string.pref_jpegquality_default));
 
-        mParameters.setJpegQuality(
-            JpegEncodingQualityMappings.getQualityNumber(jpegQuality));
+        mParameters.setJpegQuality(Integer.parseInt(jpegQuality));
 
         // Call additional video camera parameters
         setAdditionalCameraParameters();

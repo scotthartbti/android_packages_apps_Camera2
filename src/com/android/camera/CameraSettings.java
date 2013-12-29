@@ -135,8 +135,8 @@ public class CameraSettings {
 
     public static final String EXPOSURE_DEFAULT_VALUE = "0";
 
-    public static final int CURRENT_VERSION = 5;
-    public static final int CURRENT_LOCAL_VERSION = 2;
+    public static final int CURRENT_VERSION = 6;
+    public static final int CURRENT_LOCAL_VERSION = 3;
 
     public static final int DEFAULT_VIDEO_DURATION = 0; // no limit
     private static final int MMS_VIDEO_DURATION = (CamcorderProfile.get(CamcorderProfile.QUALITY_LOW) != null) ?
@@ -609,6 +609,12 @@ public class CameraSettings {
             // that of CamcorderProfile.java.
             editor.remove("pref_video_quality_key");
         }
+
+        // Remove it and let the user set a new one if
+        // needed
+        editor.remove(KEY_CAMERA_JPEG_QUALITY);
+        editor.remove(KEY_VIDEO_JPEG_QUALITY);
+
         editor.putInt(KEY_LOCAL_VERSION, CURRENT_LOCAL_VERSION);
         editor.apply();
     }
@@ -629,21 +635,8 @@ public class CameraSettings {
 
         SharedPreferences.Editor editor = pref.edit();
         if (version == 0) {
-            // We won't use the preference which change in version 1.
-            // So, just upgrade to version 1 directly
-            version = 1;
-        }
-        if (version == 1) {
-            // Change jpeg quality {65,75,85} to {normal,fine,superfine}
-            String quality = pref.getString(KEY_CAMERA_JPEG_QUALITY, "85");
-            if (quality.equals("65")) {
-                quality = "normal";
-            } else if (quality.equals("75")) {
-                quality = "fine";
-            } else {
-                quality = "superfine";
-            }
-            editor.putString(KEY_CAMERA_JPEG_QUALITY, quality);
+            // We won't use the preference which change in version 1 & 2.
+            // So, just upgrade to version 2 directly
             version = 2;
         }
         if (version == 2) {
@@ -659,6 +652,10 @@ public class CameraSettings {
             editor.remove("pref_camera_videoquality_key");
             editor.remove("pref_camera_video_duration_key");
         }
+
+        // We do not use a global settings for it any more
+        // ignore the current settings and remove it.
+        editor.remove(KEY_CAMERA_JPEG_QUALITY);
 
         editor.putInt(KEY_VERSION, CURRENT_VERSION);
         editor.apply();

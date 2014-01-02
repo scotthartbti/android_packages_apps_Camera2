@@ -75,6 +75,8 @@ public class CameraSettings {
     public static final String KEY_SMART_CAPTURE_PHOTO = "pref_smart_capture_camera";
     public static final String KEY_SMART_CAPTURE_VIDEO = "pref_smart_capture_video";
     public static final String KEY_TRUE_VIEW = "pref_true_view_camera";
+    public static final String KEY_VOLUME_KEY_MODE = "pref_volume_key_mode";
+    public static final String KEY_POWER_KEY_SHUTTER = "pref_power_key_shutter";
 
     public static final String KEY_VIDEO_ENCODER = "pref_camera_videoencoder_key";
     public static final String KEY_AUDIO_ENCODER = "pref_camera_audioencoder_key";
@@ -130,6 +132,10 @@ public class CameraSettings {
     private static final String VIDEO_QUALITY_MMS = "mms";
     private static final String VIDEO_QUALITY_YOUTUBE = "youtube";
 
+    public static final int VKM_SHUTTER       = 0;
+    public static final int VKM_SHUTTER_FOCUS = 1;
+    public static final int VKM_FOCUS_SHUTTER = 2;
+    public static final int VKM_ZOOM          = 3;
 
     public static final String EXPOSURE_DEFAULT_VALUE = "0";
 

@@ -203,6 +203,9 @@ public class PhotoModule
     private TextView RightValue;
     private TextView Title;
 
+    private int mVolumeKeyMode = CameraSettings.VKM_ZOOM;
+    private boolean mPowerKeyShutter;
+
     // mCropValue and mSaveUri are used only if isImageCaptureIntent() is true.
     private String mCropValue;
     private Uri mSaveUri;
@@ -575,8 +578,9 @@ public class PhotoModule
         mFocusManager.setMirror(mMirror);
         mFocusManager.setParameters(mInitialParams);
         setupPreview();
-        initSmartCapture();
-        initTrueView();
+
+        // add update UI preferences into the que
+        mHandler.sendEmptyMessage(SET_PHOTO_UI_PARAMS);
 
         // reset zoom value index
         mZoomValue = 0;
@@ -1685,8 +1689,8 @@ public class PhotoModule
         UsageStatistics.onContentViewChanged(
                 UsageStatistics.COMPONENT_CAMERA, "PhotoModule");
 
-        initSmartCapture();
-        initTrueView();
+        // add update UI preferences into the que
+        mHandler.sendEmptyMessage(SET_PHOTO_UI_PARAMS);
 
         Sensor gsensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         if (gsensor != null) {
@@ -1858,14 +1862,27 @@ public class PhotoModule
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // Do not handle any key if the activity is
+        // not in active camera/video mode
+        if (!mActivity.isInCameraApp()) {
+            return false;
+        }
         switch (keyCode) {
             case KeyEvent.KEYCODE_VOLUME_UP:
+                return handleVolumeKeyEvent(false, false, event);
             case KeyEvent.KEYCODE_VOLUME_DOWN:
+                return handleVolumeKeyEvent(true, false, event);
             case KeyEvent.KEYCODE_FOCUS:
-                if (/*TODO: mActivity.isInCameraApp() &&*/ mFirstTimeInitialized) {
+                if (mFirstTimeInitialized) {
                     if (event.getRepeatCount() == 0) {
                         onShutterButtonFocus(true);
                     }
+                    return true;
+                }
+                return false;
+            case KeyEvent.KEYCODE_POWER:
+                if (mPowerKeyShutter && mFirstTimeInitialized && event.getRepeatCount() == 0) {
+                    onShutterButtonFocus(true);
                     return true;
                 }
                 return false;
@@ -1894,19 +1911,69 @@ public class PhotoModule
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_VOLUME_UP:
+                return handleVolumeKeyEvent(false, true, event);
             case KeyEvent.KEYCODE_VOLUME_DOWN:
-                if (/*mActivity.isInCameraApp() && */ mFirstTimeInitialized) {
-                    onShutterButtonClick();
-                    return true;
-                }
-                return false;
+                return handleVolumeKeyEvent(true, true, event);
             case KeyEvent.KEYCODE_FOCUS:
                 if (mFirstTimeInitialized) {
                     onShutterButtonFocus(false);
                 }
                 return true;
+            case KeyEvent.KEYCODE_POWER:
+                if (mPowerKeyShutter && mFirstTimeInitialized) {
+                    onShutterButtonClick();
+                }
+                return true;
         }
         return false;
+    }
+
+    private boolean handleVolumeKeyEvent(boolean isVolumeDownKey,
+                boolean isUpEvent, KeyEvent event) {
+        if (!mFirstTimeInitialized) {
+            return false;
+        }
+        switch (mVolumeKeyMode) {
+            case CameraSettings.VKM_SHUTTER:
+                return handleFocusAndShutter(false, isUpEvent, event);
+            case CameraSettings.VKM_SHUTTER_FOCUS:
+                return handleFocusAndShutter(!isVolumeDownKey, isUpEvent, event);
+            case CameraSettings.VKM_FOCUS_SHUTTER:
+                return handleFocusAndShutter(isVolumeDownKey, isUpEvent, event);
+            case CameraSettings.VKM_ZOOM:
+                if (mUI.mMenuInitialized && !isUpEvent) {
+                    mUI.onScaleStepResize(!isVolumeDownKey);
+                }
+                return true;
+        }
+        return false;
+    }
+
+    private boolean handleFocusAndShutter(boolean which,
+                boolean isUpEvent, KeyEvent event) {
+        if (mVolumeKeyMode != CameraSettings.VKM_SHUTTER
+                    && !isUpEvent && event.getRepeatCount() == 0) {
+            if (which) {
+                if (mVolumeKeyMode != CameraSettings.VKM_SHUTTER_FOCUS
+                        || mVolumeKeyMode != CameraSettings.VKM_FOCUS_SHUTTER) {
+                    // if any pre focus is in progress
+                    // cancel it
+                    onShutterButtonFocus(false);
+                }
+                // actually set the focus
+                onShutterButtonFocus(true);
+            } else {
+                onShutterButtonClick();
+            }
+            return true;
+        } else if (mVolumeKeyMode == CameraSettings.VKM_SHUTTER) {
+            if (!isUpEvent) {
+                onShutterButtonFocus(true);
+            } else {
+                onShutterButtonClick();
+            }
+        }
+        return true;
     }
 
     private void closeCamera() {
@@ -2347,6 +2414,22 @@ public class PhotoModule
         if(CameraUtil.isSupported(picture_flip, CameraSettings.getSupportedFlipMode(mParameters))){
             mParameters.set(CameraSettings.KEY_QC_SNAPSHOT_PICTURE_FLIP, picture_flip);
         }
+
+        // Set volume key mode.
+        String volumeKeyMode = mPreferences.getString(
+                CameraSettings.KEY_VOLUME_KEY_MODE,
+                mActivity.getString(R.string.pref_volume_key_mode_default));
+        mVolumeKeyMode = Integer.parseInt(volumeKeyMode);
+
+        // Set power key shutter.
+        String powerKeyShutter = mPreferences.getString(
+                CameraSettings.KEY_POWER_KEY_SHUTTER,
+                mActivity.getString(R.string.setting_on_value));
+        mPowerKeyShutter = powerKeyShutter.equals(mActivity.getString(R.string.setting_on_value));
+        mActivity.setPowerKey(mPowerKeyShutter);
+
+        initSmartCapture();
+        initTrueView();
     }
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private void setAutoExposureLockIfSupported() {
@@ -2637,8 +2720,6 @@ public class PhotoModule
             setCameraParametersWhenIdle(UPDATE_PARAM_PREFERENCE);
             mUI.updateOnScreenIndicators(mParameters, mPreferenceGroup,
                 mPreferences);
-            initSmartCapture();
-            initTrueView();
         } else {
             mHandler.sendEmptyMessage(SET_PHOTO_UI_PARAMS);
         }
@@ -2782,7 +2863,7 @@ public class PhotoModule
             data = mGData;
         } else if (type == Sensor.TYPE_MAGNETIC_FIELD) {
             data = mMData;
-        } else if (type == Sensor.TYPE_PROXIMITY) {
+        } else if (type == Sensor.TYPE_PROXIMITY && mActivity.isInCameraApp()) {
             int currentProx = (int) event.values[0];
             if (currentProx == 0) {
                 if (mFirstTimeInitialized) {

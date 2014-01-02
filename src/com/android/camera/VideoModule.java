@@ -95,6 +95,7 @@ public class VideoModule implements CameraModule,
     private static final int SHOW_TAP_TO_SNAPSHOT_TOAST = 7;
     private static final int SWITCH_CAMERA = 8;
     private static final int SWITCH_CAMERA_START_ANIMATION = 9;
+    private static final int SET_VIDEO_UI_PARAMS = 10;
 
     private static final int SCREEN_DELAY = 2 * 60 * 1000;
 
@@ -188,6 +189,8 @@ public class VideoModule implements CameraModule,
     private boolean mStartPrevPending = false;
     private boolean mStopPrevPending = false;
 
+    private int mVolumeKeyMode = CameraSettings.VKM_ZOOM;
+    private boolean mPowerKeyShutter;
 
     private final MediaSaveService.OnMediaSavedListener mOnVideoSavedListener =
             new MediaSaveService.OnMediaSavedListener() {
@@ -364,6 +367,12 @@ public class VideoModule implements CameraModule,
                     break;
                 }
 
+                case SET_VIDEO_UI_PARAMS: {
+                    setCameraParameters();
+                    mUI.updateOnScreenIndicators(mParameters, mPreferences);
+                    break;
+                }
+
                 default:
                     Log.v(TAG, "Unhandled message: " + msg.what);
                     break;
@@ -508,7 +517,7 @@ public class VideoModule implements CameraModule,
     @Override
     public void onSensorChanged(SensorEvent event) {
         int type = event.sensor.getType();
-        if (type == Sensor.TYPE_PROXIMITY) {
+        if (type == Sensor.TYPE_PROXIMITY && mActivity.isInCameraApp()) {
             // Minimum 2 second timeout for start/stop record
             // else it will crash the thread on low end devices
             if ((SystemClock.uptimeMillis() - mLastVid) > 2000) {
@@ -869,6 +878,9 @@ public class VideoModule implements CameraModule,
         // Initializing it here after the preview is started.
         mUI.initializeZoom(mParameters);
 
+        // add update UI preferences into the que
+        mHandler.sendEmptyMessage(SET_VIDEO_UI_PARAMS);
+
         keepScreenOnAwhile();
 
         mOrientationManager.resume();
@@ -884,8 +896,6 @@ public class VideoModule implements CameraModule,
 
         UsageStatistics.onContentViewChanged(
                 UsageStatistics.COMPONENT_CAMERA, "VideoModule");
-
-        initSmartCapture();
 
         mHandler.post(new Runnable(){
             @Override
@@ -1060,12 +1070,24 @@ public class VideoModule implements CameraModule,
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        // Do not handle any key if the activity is paused.
+        // Do not handle any key if the activity is paused
+        // or not in active camera/video mode
         if (mPaused) {
             return true;
+        } else if (!mActivity.isInCameraApp()) {
+            return false;
         }
 
         switch (keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                return handleVolumeKeyEvent(false, event);
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                return handleVolumeKeyEvent(true, event);
+            case KeyEvent.KEYCODE_POWER:
+                if (mPowerKeyShutter) {
+                    return true;
+                }
+                break;
             case KeyEvent.KEYCODE_CAMERA:
                 if (event.getRepeatCount() == 0) {
                     mUI.clickShutter();
@@ -1079,7 +1101,9 @@ public class VideoModule implements CameraModule,
                 }
                 break;
             case KeyEvent.KEYCODE_MENU:
-                if (mMediaRecorderRecording) return true;
+                if (mMediaRecorderRecording) {
+                    return true;
+                }
                 break;
         }
         return false;
@@ -1088,11 +1112,44 @@ public class VideoModule implements CameraModule,
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         switch (keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_UP:
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                return true;
             case KeyEvent.KEYCODE_CAMERA:
                 mUI.pressShutter(false);
                 return true;
+            case KeyEvent.KEYCODE_POWER:
+                if (mPowerKeyShutter) {
+                    onShutterButtonClick();
+                    return true;
+                }
+                break;
         }
         return false;
+    }
+
+    private boolean handleVolumeKeyEvent(boolean isVolumeDownKey, KeyEvent event) {
+        switch (mVolumeKeyMode) {
+            case CameraSettings.VKM_SHUTTER:
+                return handleShutter(true, event);
+            case CameraSettings.VKM_SHUTTER_FOCUS:
+                return handleShutter(isVolumeDownKey, event);
+            case CameraSettings.VKM_FOCUS_SHUTTER:
+                return handleShutter(!isVolumeDownKey, event);
+            case CameraSettings.VKM_ZOOM:
+                if (mUI.mVideoMenuInitialized) {
+                    mUI.onScaleStepResize(!isVolumeDownKey);
+                }
+                return true;
+        }
+        return false;
+    }
+
+    private boolean handleShutter(boolean which, KeyEvent event) {
+        if (which && event.getRepeatCount() == 0) {
+            onShutterButtonClick();
+        }
+        return true;
     }
 
     @Override
@@ -1755,7 +1812,7 @@ public class VideoModule implements CameraModule,
         return supported == null ? false : supported.indexOf(value) >= 0;
     }
 
-     private void setAdditionalCameraParameters() {
+    private void setAdditionalCameraParameters() {
         // Set color effect parameter.
         String colorEffect = mPreferences.getString(
             CameraSettings.KEY_VIDEO_COLOR_EFFECT,
@@ -1869,9 +1926,26 @@ public class VideoModule implements CameraModule,
         Log.v(TAG, "Video HDR Setting =" + videoHDR);
         if (isSupported(videoHDR, mParameters.getSupportedVideoHDRModes())) {
              mParameters.setVideoHDRMode(videoHDR);
-        } else
+        } else {
              mParameters.setVideoHDRMode("off");
+        }
+
+        // Set volume key mode.
+        String volumeKeyMode = mPreferences.getString(
+                CameraSettings.KEY_VOLUME_KEY_MODE,
+                mActivity.getString(R.string.pref_volume_key_mode_default));
+        mVolumeKeyMode = Integer.parseInt(volumeKeyMode);
+
+        // Set power key shutter.
+        String powerKeyShutter = mPreferences.getString(
+                CameraSettings.KEY_POWER_KEY_SHUTTER,
+                mActivity.getString(R.string.setting_on_value));
+        mPowerKeyShutter = powerKeyShutter.equals(mActivity.getString(R.string.setting_on_value));
+        mActivity.setPowerKey(mPowerKeyShutter);
+
+        initSmartCapture();
     }
+
     @SuppressWarnings("deprecation")
     private void setCameraParameters() {
         Log.d(TAG,"Preview dimension in App->"+mDesiredPreviewWidth+"X"+mDesiredPreviewHeight);
@@ -2017,7 +2091,6 @@ public class VideoModule implements CameraModule,
                 setCameraParameters();
             }
             mUI.updateOnScreenIndicators(mParameters, mPreferences);
-            initSmartCapture();
         }
     }
 
@@ -2047,7 +2120,6 @@ public class VideoModule implements CameraModule,
         initializeVideoSnapshot();
         resizeForPreviewAspectRatio();
         initializeVideoControl();
-        initSmartCapture();
 
         // From onResume
         mZoomValue = 0;

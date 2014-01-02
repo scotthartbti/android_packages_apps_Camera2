@@ -705,4 +705,8 @@
     <!-- The label for TrueView -->
     <string name="pref_true_view_label">TRUE VIEW</string>
 
+    <!-- Volume key handling -->
+    <!-- Default value for volume key mode - DO NOT TRANSLATE -->
+    <string name="pref_volume_key_mode_default">3</string>
+
 </resources>

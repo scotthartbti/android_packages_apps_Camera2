@@ -29,6 +29,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
@@ -164,6 +165,8 @@ public class CameraActivity extends Activity
     private long mStorageSpaceBytes = Storage.LOW_STORAGE_THRESHOLD_BYTES;
     private boolean mAutoRotateScreen;
     private boolean mSecureCamera;
+    private boolean mInCameraApp = true;
+    private boolean mPowerKey;
     // This is a hack to speed up the start of SecureCamera.
     private static boolean sFirstStartAfterScreenOn = true;
     private int mLastRawOrientation;
@@ -495,6 +498,30 @@ public class CameraActivity extends Activity
                 "thumbnailTap");
 
         mFilmStripView.getController().goToNextItem();
+    }
+
+    public void setPowerKey(boolean enabled) {
+        mPowerKey = enabled;
+        initPowerKey(true);
+    }
+
+    public void initPowerKey(boolean enabled) {
+        try {
+            if (enabled && mPowerKey) {
+                getWindow().addFlags(WindowManager.LayoutParams.PREVENT_POWER_KEY);
+            } else {
+                getWindow().clearFlags(WindowManager.LayoutParams.PREVENT_POWER_KEY);
+            }
+        } catch (SecurityException ex) {
+            mPowerKey = false;
+            SharedPreferences preferences = this.getSharedPreferences(
+                ComboPreferences.getGlobalSharedPreferencesName(this),
+                Context.MODE_PRIVATE);
+            Editor editor = preferences.edit();
+            editor.putString(CameraSettings.KEY_POWER_KEY_SHUTTER,
+                    getResources().getString(R.string.setting_off_value));
+            editor.apply();
+        }
     }
 
     protected boolean initSmartCapture(ComboPreferences prefs, boolean isVideo) {
@@ -1432,6 +1459,10 @@ public class CameraActivity extends Activity
         return mSecureCamera;
     }
 
+    public boolean isInCameraApp() {
+        return mInCameraApp;
+    }
+
     @Override
     public void onModuleSelected(int moduleIndex) {
         if (mCurrentModuleIndex == moduleIndex) {
@@ -1642,7 +1673,6 @@ public class CameraActivity extends Activity
         }
     }
 
-
     /**
      * Check whether camera controls are visible.
      *
@@ -1660,6 +1690,14 @@ public class CameraActivity extends Activity
      */
     private void setPreviewControlsVisibility(boolean showControls) {
         mCurrentModule.onPreviewFocusChanged(showControls);
+
+        // based on the information if we have controls or not
+        // activate the override for the power key
+        initPowerKey(showControls);
+
+        // controls are only shown when the camera app is active
+        // so we can assume to fetch this information from here
+        mInCameraApp = showControls;
     }
 
     // Accessor methods for getting latency times used in performance testing

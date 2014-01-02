@@ -82,6 +82,7 @@ public class VideoUI implements PieRenderer.PieListener,
     private RenderOverlay mRenderOverlay;
     private PieRenderer mPieRenderer;
     private VideoMenu mVideoMenu;
+    public boolean mVideoMenuInitialized;
     private CameraControls mCameraControls;
     private SettingsPopup mPopup;
     private ZoomRenderer mZoomRenderer;
@@ -732,6 +733,7 @@ public class VideoUI implements PieRenderer.PieListener,
 
     public void initializePopup(PreferenceGroup pref) {
         mVideoMenu.initialize(pref);
+        mVideoMenuInitialized = true;
     }
 
     public void initializeZoom(Parameters param) {
@@ -772,6 +774,13 @@ public class VideoUI implements PieRenderer.PieListener,
 
     public boolean isVisible() {
         return mCameraControls.getVisibility() == View.VISIBLE;
+    }
+
+    public boolean onScaleStepResize(boolean direction) {
+        if (mGestures != null) {
+            return mGestures.onScaleStepResize(direction);
+        }
+        return false;
     }
 
     @Override

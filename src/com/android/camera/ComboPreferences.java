@@ -73,7 +73,7 @@ public class ComboPreferences implements
         return context.getPackageName() + "_preferences_" + cameraId;
     }
 
-    private static String getGlobalSharedPreferencesName(Context context) {
+    public static String getGlobalSharedPreferencesName(Context context) {
         return context.getPackageName() + "_preferences_camera";
     }
 
@@ -103,6 +103,8 @@ public class ComboPreferences implements
         movePrefFrom(prefMap, CameraSettings.KEY_CAMERA_ID, src);
         movePrefFrom(prefMap, CameraSettings.KEY_RECORD_LOCATION, src);
         movePrefFrom(prefMap, CameraSettings.KEY_TRUE_VIEW, src);
+        movePrefFrom(prefMap, CameraSettings.KEY_VOLUME_KEY_MODE, src);
+        movePrefFrom(prefMap, CameraSettings.KEY_POWER_KEY_SHUTTER, src);
         movePrefFrom(prefMap, CameraSettings.KEY_CAMERA_FIRST_USE_HINT_SHOWN, src);
         movePrefFrom(prefMap, CameraSettings.KEY_VIDEO_FIRST_USE_HINT_SHOWN, src);
         movePrefFrom(prefMap, CameraSettings.KEY_VIDEO_EFFECT, src);
@@ -148,6 +150,8 @@ public class ComboPreferences implements
                 || key.equals(CameraSettings.KEY_CAMERA_ID)
                 || key.equals(CameraSettings.KEY_RECORD_LOCATION)
                 || key.equals(CameraSettings.KEY_TRUE_VIEW)
+                || key.equals(CameraSettings.KEY_VOLUME_KEY_MODE)
+                || key.equals(CameraSettings.KEY_POWER_KEY_SHUTTER)
                 || key.equals(CameraSettings.KEY_CAMERA_FIRST_USE_HINT_SHOWN)
                 || key.equals(CameraSettings.KEY_VIDEO_FIRST_USE_HINT_SHOWN)
                 || key.equals(CameraSettings.KEY_VIDEO_EFFECT)

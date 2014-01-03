@@ -1940,7 +1940,8 @@ public class VideoModule implements CameraModule,
         String powerKeyShutter = mPreferences.getString(
                 CameraSettings.KEY_POWER_KEY_SHUTTER,
                 mActivity.getString(R.string.setting_on_value));
-        mPowerKeyShutter = powerKeyShutter.equals(mActivity.getString(R.string.setting_on_value));
+        mPowerKeyShutter = powerKeyShutter.equals(
+                mActivity.getString(R.string.pref_power_key_shutter_default));
         mActivity.setPowerKey(mPowerKeyShutter);
 
         initSmartCapture();

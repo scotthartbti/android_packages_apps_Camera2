@@ -696,17 +696,31 @@
     <!-- The label for Smart capture. -->
     <string name="pref_smart_capture_label">SMART CAPTURE</string>
     <string name="pref_smart_capture_title">Smart capture</string>
-    <string name="pref_smart_capture_default">@string/setting_off_value</string>
+    <!-- Default value for smart capture - DO NOT TRANSLATE -->
+    <string name="pref_smart_capture_default">off</string>
 
     <!-- Red eye flash mode title -->
     <string name="pref_camera_flashmode_entry_redeye">Red eye</string>
     <string name="pref_camera_flashmode_label_redeye">RED EYE</string>
 
     <!-- The label for TrueView -->
-    <string name="pref_true_view_label">TRUE VIEW</string>
+    <string name="pref_true_view_label">True view</string>
+    <!-- Default value for true view - DO NOT TRANSLATE -->
+    <string name="pref_true_view_default">off</string>
 
     <!-- Volume key handling -->
     <!-- Default value for volume key mode - DO NOT TRANSLATE -->
     <string name="pref_volume_key_mode_default">3</string>
+
+    <string name="pref_volume_key_mode_label">Volume keys</string>
+    <string name="pref_volume_key_mode_shutter">Always shutter</string>
+    <string name="pref_volume_key_mode_focus_shutter">Shutter / Focus</string>
+    <string name="pref_volume_key_mode_shutter_focus">Focus / Shutter</string>
+    <string name="pref_volume_key_mode_zoom">Zoom</string>
+
+    <!-- Power key shutter -->
+    <string name="pref_power_key_shutter_label">Power key shutter</string>
+    <!-- Default value for power shutter - DO NOT TRANSLATE -->
+    <string name="pref_power_key_shutter_default">off</string>
 
 </resources>

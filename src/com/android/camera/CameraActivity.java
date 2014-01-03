@@ -518,8 +518,7 @@ public class CameraActivity extends Activity
                 ComboPreferences.getGlobalSharedPreferencesName(this),
                 Context.MODE_PRIVATE);
             Editor editor = preferences.edit();
-            editor.putString(CameraSettings.KEY_POWER_KEY_SHUTTER,
-                    getResources().getString(R.string.setting_off_value));
+            editor.putString(CameraSettings.KEY_POWER_KEY_SHUTTER, "off");
             editor.apply();
         }
     }
@@ -528,13 +527,13 @@ public class CameraActivity extends Activity
         return prefs.getString(isVideo
             ? CameraSettings.KEY_SMART_CAPTURE_VIDEO
             : CameraSettings.KEY_SMART_CAPTURE_PHOTO,
-            getResources().getString(R.string.setting_off_value))
+            getResources().getString(R.string.pref_smart_capture_default))
             .equals(getResources().getString(R.string.setting_on_value));
     }
 
     protected void initTrueView(ComboPreferences prefs) {
         if (prefs.getString(CameraSettings.KEY_TRUE_VIEW,
-            getResources().getString(R.string.setting_off_value))
+            getResources().getString(R.string.pref_true_view_default))
             .equals(getResources().getString(R.string.setting_on_value))) {
             mTrueView = true;
         } else {

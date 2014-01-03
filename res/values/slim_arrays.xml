@@ -593,19 +593,28 @@
         <item>@drawable/ic_smart_capture</item>
     </array>
 
-    <array name="pref_true_view_labels" translatable="false">
-        <item>@string/pref_true_view_label</item>
-        <item>@string/pref_true_view_label</item>
+    <string-array name="pref_power_key_shutter_entryvalues" translatable="false">
+        <item>off</item>
+        <item>on</item>
+    </string-array>
+
+    <array name="pref_power_key_shutter_entries" translatable="false">
+        <item>@string/setting_off</item>
+        <item>@string/setting_on</item>
     </array>
 
-    <array name="true_view_icons" translatable="false">
-        <item>@drawable/ic_true_view_off</item>
-        <item>@drawable/ic_true_view</item>
-    </array>
+    <string-array name="pref_volume_key_mode_entryvalues" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
 
-    <array name="true_view_largeicons" translatable="false">
-        <item>@drawable/ic_true_view_off</item>
-        <item>@drawable/ic_true_view</item>
+    <array name="pref_volume_key_mode_entries" translatable="false">
+        <item>@string/pref_volume_key_mode_shutter</item>
+        <item>@string/pref_volume_key_mode_focus_shutter</item>
+        <item>@string/pref_volume_key_mode_shutter_focus</item>
+        <item>@string/pref_volume_key_mode_zoom</item>
     </array>
 
 </resources>

@@ -27,15 +27,6 @@
             camera:entryValues="@array/pref_smart_capture_entryvalues"
             camera:labelList="@array/pref_smart_capture_labels" />
     <IconListPreference
-            camera:key="pref_true_view_camera"
-            camera:defaultValue="@string/pref_smart_capture_default"
-            camera:title="@string/pref_true_view_label"
-            camera:icons="@array/true_view_icons"
-            camera:largeIcons="@array/true_view_largeicons"
-            camera:entries="@array/pref_smart_capture_entries"
-            camera:entryValues="@array/pref_smart_capture_entryvalues"
-            camera:labelList="@array/pref_true_view_labels" />
-    <IconListPreference
             camera:key="pref_camera_flashmode_key"
             camera:defaultValue="@string/pref_camera_flashmode_default"
             camera:title="@string/pref_camera_flashmode_title"
@@ -74,6 +65,24 @@
             camera:entries="@array/pref_camera_recordlocation_entries"
             camera:labelList="@array/pref_camera_recordlocation_labels"
             camera:entryValues="@array/pref_camera_recordlocation_entryvalues" />
+    <ListPreference
+            camera:key="pref_true_view_camera"
+            camera:defaultValue="@string/pref_true_view_default"
+            camera:title="@string/pref_true_view_label"
+            camera:entries="@array/pref_smart_capture_entries"
+            camera:entryValues="@array/pref_smart_capture_entryvalues" />
+    <ListPreference
+            camera:key="pref_power_key_shutter"
+            camera:defaultValue="@string/pref_power_key_shutter_default"
+            camera:title="@string/pref_power_key_shutter_label"
+            camera:entries="@array/pref_power_key_shutter_entries"
+            camera:entryValues="@array/pref_power_key_shutter_entryvalues" />
+    <ListPreference
+            camera:key="pref_volume_key_mode"
+            camera:defaultValue="@string/pref_volume_key_mode_default"
+            camera:title="@string/pref_volume_key_mode_label"
+            camera:entries="@array/pref_volume_key_mode_entries"
+            camera:entryValues="@array/pref_volume_key_mode_entryvalues" />
     <ListPreference
             camera:key="pref_camera_picturesize_key"
             camera:title="@string/pref_camera_picturesize_title"

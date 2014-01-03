@@ -18,25 +18,36 @@ package com.android.camera;
 
 import java.util.Locale;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.hardware.Camera.Parameters;
+import android.view.LayoutInflater;
 
 import com.android.camera.ui.AbstractSettingPopup;
 import com.android.camera.ui.CountdownTimerPopup;
 import com.android.camera.ui.ListPrefSettingPopup;
+import com.android.camera.ui.MoreSettingPopup;
 import com.android.camera.ui.PieItem;
 import com.android.camera.ui.PieItem.OnClickListener;
 import com.android.camera.ui.PieRenderer;
 import com.android.camera2.R;
 
 public class PhotoMenu extends PieController
-        implements CountdownTimerPopup.Listener,
+        implements MoreSettingPopup.Listener,
+        CountdownTimerPopup.Listener,
         ListPrefSettingPopup.Listener {
     private static String TAG = "PhotoMenu";
+
+    private String[] mSettingsKeys;
+    private MoreSettingPopup mPopup1;
+    private static final int POPUP_NONE         = 0;
+    private static final int POPUP_FIRST_LEVEL  = 1;
+    private static final int POPUP_SECOND_LEVEL = 2;
 
     private final String mSettingOff;
 
     private PhotoUI mUI;
+    private int mPopupStatus;
     private AbstractSettingPopup mPopup;
     private CameraActivity mActivity;
 
@@ -50,6 +61,8 @@ public class PhotoMenu extends PieController
     public void initialize(PreferenceGroup group) {
         super.initialize(group);
         mPopup = null;
+        mPopup1 = null;
+        mPopupStatus = POPUP_NONE;
         PieItem item = null;
         final Resources res = mActivity.getResources();
         Locale locale = res.getConfiguration().locale;
@@ -184,7 +197,7 @@ public class PhotoMenu extends PieController
         // Scene mode.
         if (group.findPreference(CameraSettings.KEY_SCENE_MODE) != null) {
             item = makeItem(R.drawable.ic_sce);
-            final ListPreference effectPref = group.findPreference(CameraSettings.KEY_SCENE_MODE);
+            final ListPreference scenePref = group.findPreference(CameraSettings.KEY_SCENE_MODE);
             item.setLabel(res.getString(R.string.pref_camera_scenemode_title).toUpperCase(locale));
             item.setOnClickListener(new OnClickListener() {
                 @Override
@@ -192,7 +205,7 @@ public class PhotoMenu extends PieController
                     ListPrefSettingPopup popup =
                         (ListPrefSettingPopup) mActivity.getLayoutInflater().inflate(
                         R.layout.list_pref_setting_popup, null, false);
-                    popup.initialize(effectPref);
+                    popup.initialize(scenePref);
                     popup.setSettingChangedListener(PhotoMenu.this);
                     mUI.dismissPopup();
                     mPopup = popup;
@@ -203,101 +216,124 @@ public class PhotoMenu extends PieController
         }
         // Settings
         PieItem settings = makeItem(R.drawable.ic_settings_holo_light);
-        settings.setLabel(res.getString(R.string.camera_menu_settings_label));
-        more.addItem(settings);
-        // location
-        if (group.findPreference(CameraSettings.KEY_RECORD_LOCATION) != null) {
-            item = makeSwitchItem(CameraSettings.KEY_RECORD_LOCATION, true);
-            settings.addItem(item);
-            if (mActivity.isSecureCamera()) {
-                // Prevent location preference from getting changed in secure camera mode
-                item.setEnabled(false);
+        settings.setLabel(mActivity.getResources().getString(R.string.camera_menu_settings_label));
+        settings.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(PieItem item) {
+                if (mPopup1 == null || mPopupStatus != POPUP_FIRST_LEVEL){
+                    initializePopup();
+                    mPopupStatus = POPUP_FIRST_LEVEL;
+                }
+                mUI.showPopup(mPopup1);
             }
-        }
-        // TrueView
-        if (group.findPreference(CameraSettings.KEY_TRUE_VIEW) != null) {
-            item = makeSwitchItem(CameraSettings.KEY_TRUE_VIEW, true);
-            item.setLabel(res.getString(R.string.pref_true_view_label).toUpperCase(locale));
-            settings.addItem(item);
-        }
-        // Image size.
-        final ListPreference sizePref = group.findPreference(CameraSettings.KEY_PICTURE_SIZE);
-        if (sizePref != null) {
-            item = makeItem(R.drawable.ic_imagesize);
-            item.setLabel(res.getString(
-                    R.string.pref_camera_picturesize_title).toUpperCase(locale));
-            item.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(PieItem item) {
-                    ListPrefSettingPopup popup =
-                        (ListPrefSettingPopup) mActivity.getLayoutInflater().inflate(
-                        R.layout.list_pref_setting_popup, null, false);
-                    popup.initialize(sizePref);
-                    popup.setSettingChangedListener(PhotoMenu.this);
-                    mUI.dismissPopup();
-                    mPopup = popup;
-                    mUI.showPopup(mPopup);
-                }
-            });
-            settings.addItem(item);
-        }
-        // Jpeg quality.
-        if (group.findPreference(CameraSettings.KEY_CAMERA_JPEG_QUALITY) != null) {
-            item = makeItem(R.drawable.ic_jpeg);
-            final ListPreference effectPref =
-                group.findPreference(CameraSettings.KEY_CAMERA_JPEG_QUALITY);
-            item.setLabel(res.getString(R.string.pref_jpegquality_title).toUpperCase(locale));
-            item.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(PieItem item) {
-                    ListPrefSettingPopup popup =
-                        (ListPrefSettingPopup) mActivity.getLayoutInflater().inflate(
-                        R.layout.list_pref_setting_popup, null, false);
-                    popup.initialize(effectPref);
-                    popup.setSettingChangedListener(PhotoMenu.this);
-                    mUI.dismissPopup();
-                    mPopup = popup;
-                    mUI.showPopup(mPopup);
-                }
-            });
-            settings.addItem(item);
-        }
-        // Focus mode
-        if (group.findPreference(CameraSettings.KEY_FOCUS_MODE) != null) {
-            item = makeItem(R.drawable.ic_focus);
-            final ListPreference focusPref =
-                group.findPreference(CameraSettings.KEY_FOCUS_MODE);
-            item.setLabel(res.getString(R.string.pref_camera_focusmode_title).toUpperCase(locale));
-            item.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(PieItem item) {
-                    ListPrefSettingPopup popup =
-                        (ListPrefSettingPopup) mActivity.getLayoutInflater().inflate(
-                        R.layout.list_pref_setting_popup, null, false);
-                    popup.initialize(focusPref);
-                    popup.setSettingChangedListener(PhotoMenu.this);
-                    mUI.dismissPopup();
-                    mPopup = popup;
-                    mUI.showPopup(mPopup);
-                }
-            });
-            settings.addItem(item);
-        }
+        });
+        more.addItem(settings);
+
+        mSettingsKeys = new String[] {
+                CameraSettings.KEY_RECORD_LOCATION,
+                CameraSettings.KEY_TRUE_VIEW,
+                CameraSettings.KEY_POWER_KEY_SHUTTER,
+                CameraSettings.KEY_VOLUME_KEY_MODE,
+                CameraSettings.KEY_PICTURE_SIZE,
+                CameraSettings.KEY_PICTURE_FORMAT,
+                CameraSettings.KEY_CAMERA_JPEG_QUALITY,
+                CameraSettings.KEY_HISTOGRAM,
+                CameraSettings.KEY_SATURATION,
+                CameraSettings.KEY_CONTRAST,
+                CameraSettings.KEY_SHARPNESS,
+                CameraSettings.KEY_AUTOEXPOSURE,
+                CameraSettings.KEY_ANTIBANDING,
+                CameraSettings.KEY_DENOISE,
+                CameraSettings.KEY_FOCUS_MODE,
+                CameraSettings.KEY_SELECTABLE_ZONE_AF,
+                CameraSettings.KEY_FACE_DETECTION,
+                CameraSettings.KEY_FACE_RECOGNITION,
+                CameraSettings.KEY_AE_BRACKET_HDR
+        };
+
     }
 
     @Override
     // Hit when an item in a popup gets selected
     public void onListPrefChanged(ListPreference pref) {
-        if (mPopup != null) {
+        if (mPopup != null && mPopup1 != null) {
             mUI.dismissPopup();
         }
         onSettingChanged(pref);
     }
 
     public void popupDismissed() {
-        if (mPopup != null) {
-            mPopup = null;
+        if (mPopupStatus == POPUP_SECOND_LEVEL) {
+            initializePopup();
+            mPopupStatus = POPUP_FIRST_LEVEL;
+            mUI.showPopup(mPopup1);
+            if(mPopup1 != null) {
+                mPopup1 = null;
+            }
+        } else {
+            initializePopup();
+            if (mPopup != null) {
+                mPopup = null;
+            }
         }
+    }
+
+    @Override
+    public void overrideSettings(final String ... keyvalues) {
+        super.overrideSettings(keyvalues);
+        if (mPopup1 == null) {
+            initializePopup();
+        }
+        mPopup1.overrideSettings(keyvalues);
+    }
+
+
+    @Override
+    // Hit when an item in the first-level popup gets selected, then bring up
+    // the second-level popup
+    public void onPreferenceClicked(ListPreference pref) {
+        if (mPopupStatus != POPUP_FIRST_LEVEL) {
+            return;
+        }
+
+        LayoutInflater inflater = (LayoutInflater) mActivity.getSystemService(
+                Context.LAYOUT_INFLATER_SERVICE);
+        ListPrefSettingPopup basic = (ListPrefSettingPopup) inflater.inflate(
+                R.layout.list_pref_setting_popup, null, false);
+        basic.initialize(pref);
+        basic.setSettingChangedListener(this);
+        mUI.dismissPopup();
+        mPopup = basic;
+        mUI.showPopup(mPopup);
+        mPopupStatus = POPUP_SECOND_LEVEL;
+    }
+
+    protected void initializePopup() {
+        LayoutInflater inflater = (LayoutInflater) mActivity.getSystemService(
+                Context.LAYOUT_INFLATER_SERVICE);
+        MoreSettingPopup popup = (MoreSettingPopup) inflater.inflate(
+                R.layout.more_setting_popup, null, false);
+        popup.setSettingChangedListener(this);
+        popup.initialize(mPreferenceGroup, mSettingsKeys);
+        if (mActivity.isSecureCamera()) {
+            // Prevent location preference from getting changed in secure camera mode
+            popup.setPreferenceEnabled(CameraSettings.KEY_RECORD_LOCATION, false);
+        }
+
+        ListPreference pref = mPreferenceGroup.findPreference(
+               CameraSettings.KEY_SCENE_MODE);
+        String sceneMode = pref != null ? pref.getValue() : null;
+        ListPreference prefFace =
+            mPreferenceGroup.findPreference(CameraSettings.KEY_FACE_DETECTION);
+        String faceDetection = prefFace != null ? prefFace.getValue() : null;
+        if (sceneMode != null && !Parameters.SCENE_MODE_AUTO.equals(sceneMode)) {
+            popup.setPreferenceEnabled(CameraSettings.KEY_FOCUS_MODE, false);
+            popup.setPreferenceEnabled(CameraSettings.KEY_AUTOEXPOSURE, false);
+        }
+        if (faceDetection != null && !Parameters.FACE_DETECTION_ON.equals(faceDetection)) {
+            popup.setPreferenceEnabled(CameraSettings.KEY_FACE_RECOGNITION, false);
+        }
+        mPopup1 = popup;
     }
 
     // Return true if the preference has the specified key but not the value.

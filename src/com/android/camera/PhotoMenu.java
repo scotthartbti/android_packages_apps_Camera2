@@ -287,7 +287,6 @@ public class PhotoMenu extends PieController
         mPopup1.overrideSettings(keyvalues);
     }
 
-
     @Override
     // Hit when an item in the first-level popup gets selected, then bring up
     // the second-level popup

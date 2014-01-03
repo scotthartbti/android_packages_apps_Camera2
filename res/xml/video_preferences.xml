@@ -27,6 +27,18 @@
             camera:entryValues="@array/pref_smart_capture_entryvalues"
             camera:labelList="@array/pref_smart_capture_labels" />
     <ListPreference
+            camera:key="pref_power_key_shutter"
+            camera:defaultValue="@string/pref_power_key_shutter_default"
+            camera:title="@string/pref_power_key_shutter_label"
+            camera:entries="@array/pref_power_key_shutter_entries"
+            camera:entryValues="@array/pref_power_key_shutter_entryvalues" />
+    <ListPreference
+            camera:key="pref_volume_key_mode"
+            camera:defaultValue="@string/pref_volume_key_mode_default"
+            camera:title="@string/pref_volume_key_mode_label"
+            camera:entries="@array/pref_volume_key_mode_entries"
+            camera:entryValues="@array/pref_volume_key_mode_entryvalues" />
+    <ListPreference
             camera:key="pref_video_quality_key"
             camera:title="@string/pref_video_quality_title"
             camera:entries="@array/pref_video_quality_entries"

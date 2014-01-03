@@ -32,12 +32,20 @@ import com.android.camera2.R;
 import java.util.Locale;
 
 public class VideoMenu extends PieController
-        implements ListPrefSettingPopup.Listener,
+        implements MoreSettingPopup.Listener,
+        ListPrefSettingPopup.Listener,
         TimeIntervalPopup.Listener {
 
     private static String TAG = "CAM_VideoMenu";
 
+    private String[] mSettingsKeys;
+    private MoreSettingPopup mPopup1;
+    private static final int POPUP_NONE         = 0;
+    private static final int POPUP_FIRST_LEVEL  = 1;
+    private static final int POPUP_SECOND_LEVEL = 2;
+
     private VideoUI mUI;
+    private int mPopupStatus;
     private AbstractSettingPopup mPopup;
     private CameraActivity mActivity;
 
@@ -51,6 +59,8 @@ public class VideoMenu extends PieController
     public void initialize(PreferenceGroup group) {
         super.initialize(group);
         mPopup = null;
+        mPopup1 = null;
+        mPopupStatus = POPUP_NONE;
         PieItem item = null;
         final Resources res = mActivity.getResources();
         Locale locale = res.getConfiguration().locale;
@@ -169,61 +179,35 @@ public class VideoMenu extends PieController
             });
             more.addItem(item);
         }
-        // settings
+        // Settings
         PieItem settings = makeItem(R.drawable.ic_settings_holo_light);
-        settings.setLabel(res.getString(R.string.camera_menu_settings_label));
-        more.addItem(settings);
-        // location
-        if (group.findPreference(CameraSettings.KEY_RECORD_LOCATION) != null) {
-            item = makeSwitchItem(CameraSettings.KEY_RECORD_LOCATION, true);
-            settings.addItem(item);
-            if (mActivity.isSecureCamera()) {
-                // Prevent location preference from getting changed in secure camera mode
-                item.setEnabled(false);
+        settings.setLabel(mActivity.getResources().getString(R.string.camera_menu_settings_label));
+        settings.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(PieItem item) {
+                if (mPopup1 == null || mPopupStatus != POPUP_FIRST_LEVEL){
+                    initializePopup();
+                    mPopupStatus = POPUP_FIRST_LEVEL;
+                }
+                mUI.showPopup(mPopup1);
             }
-        }
-        // video quality
-        if (group.findPreference(CameraSettings.KEY_VIDEO_QUALITY) != null) {
-            item = makeItem(R.drawable.ic_imagesize);
-            final ListPreference qualityPref =
-                group.findPreference(CameraSettings.KEY_VIDEO_QUALITY);
-            item.setLabel(res.getString(R.string.pref_video_quality_title).toUpperCase(locale));
-            item.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(PieItem item) {
-                    ListPrefSettingPopup popup =
-                        (ListPrefSettingPopup) mActivity.getLayoutInflater().inflate(
-                        R.layout.list_pref_setting_popup, null, false);
-                    popup.initialize(qualityPref);
-                    popup.setSettingChangedListener(VideoMenu.this);
-                    mUI.dismissPopup();
-                    mPopup = popup;
-                    mUI.showPopup(mPopup);
-                }
-            });
-            settings.addItem(item);
-        }
-        // Jpeg quality.
-        if (group.findPreference(CameraSettings.KEY_VIDEO_JPEG_QUALITY) != null) {
-            item = makeItem(R.drawable.ic_jpeg);
-            final ListPreference effectPref =
-                group.findPreference(CameraSettings.KEY_VIDEO_JPEG_QUALITY);
-            item.setLabel(res.getString(R.string.pref_jpegquality_title).toUpperCase(locale));
-            item.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(PieItem item) {
-                    ListPrefSettingPopup popup =
-                        (ListPrefSettingPopup) mActivity.getLayoutInflater().inflate(
-                        R.layout.list_pref_setting_popup, null, false);
-                    popup.initialize(effectPref);
-                    popup.setSettingChangedListener(VideoMenu.this);
-                    mUI.dismissPopup();
-                    mPopup = popup;
-                    mUI.showPopup(mPopup);
-                }
-            });
-            settings.addItem(item);
-        }
+        });
+        more.addItem(settings);
+
+        mSettingsKeys = new String[] {
+                CameraSettings.KEY_RECORD_LOCATION,
+                CameraSettings.KEY_POWER_KEY_SHUTTER,
+                CameraSettings.KEY_VOLUME_KEY_MODE,
+                CameraSettings.KEY_VIDEO_QUALITY,
+                CameraSettings.KEY_VIDEO_JPEG_QUALITY,
+                CameraSettings.KEY_DIS,
+                CameraSettings.KEY_VIDEO_ENCODER,
+                CameraSettings.KEY_AUDIO_ENCODER,
+                CameraSettings.KEY_VIDEO_DURATION,
+                CameraSettings.KEY_VIDEO_HIGH_FRAME_RATE,
+                CameraSettings.KEY_VIDEO_HDR
+        };
+
     }
 
     @Override
@@ -236,10 +220,62 @@ public class VideoMenu extends PieController
     }
 
     public void popupDismissed() {
-        // the popup gets dismissed
-        if (mPopup != null) {
-            mPopup = null;
+        if (mPopupStatus == POPUP_SECOND_LEVEL) {
+            initializePopup();
+            mPopupStatus = POPUP_FIRST_LEVEL;
+            mUI.showPopup(mPopup1);
+            if(mPopup1 != null) {
+                mPopup1 = null;
+            }
+        } else {
+            initializePopup();
+            if (mPopup != null) {
+                mPopup = null;
+            }
         }
+    }
+
+    @Override
+    public void overrideSettings(final String ... keyvalues) {
+        super.overrideSettings(keyvalues);
+        if (mPopup1 == null) {
+            initializePopup();
+        }
+        mPopup1.overrideSettings(keyvalues);
+    }
+
+    @Override
+    // Hit when an item in the first-level popup gets selected, then bring up
+    // the second-level popup
+    public void onPreferenceClicked(ListPreference pref) {
+        if (mPopupStatus != POPUP_FIRST_LEVEL) {
+            return;
+        }
+
+        LayoutInflater inflater = (LayoutInflater) mActivity.getSystemService(
+                Context.LAYOUT_INFLATER_SERVICE);
+        ListPrefSettingPopup basic = (ListPrefSettingPopup) inflater.inflate(
+                R.layout.list_pref_setting_popup, null, false);
+        basic.initialize(pref);
+        basic.setSettingChangedListener(this);
+        mUI.dismissPopup();
+        mPopup = basic;
+        mUI.showPopup(mPopup);
+        mPopupStatus = POPUP_SECOND_LEVEL;
+    }
+
+    protected void initializePopup() {
+        LayoutInflater inflater = (LayoutInflater) mActivity.getSystemService(
+                Context.LAYOUT_INFLATER_SERVICE);
+        MoreSettingPopup popup = (MoreSettingPopup) inflater.inflate(
+                R.layout.more_setting_popup, null, false);
+        popup.setSettingChangedListener(this);
+        popup.initialize(mPreferenceGroup, mSettingsKeys);
+        if (mActivity.isSecureCamera()) {
+            // Prevent location preference from getting changed in secure camera mode
+            popup.setPreferenceEnabled(CameraSettings.KEY_RECORD_LOCATION, false);
+        }
+        mPopup1 = popup;
     }
 
     // Return true if the preference has the specified key but not the value.

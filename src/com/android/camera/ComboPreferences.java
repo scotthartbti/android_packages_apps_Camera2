@@ -103,6 +103,7 @@ public class ComboPreferences implements
         movePrefFrom(prefMap, CameraSettings.KEY_CAMERA_ID, src);
         movePrefFrom(prefMap, CameraSettings.KEY_RECORD_LOCATION, src);
         movePrefFrom(prefMap, CameraSettings.KEY_TRUE_VIEW, src);
+        movePrefFrom(prefMap, CameraSettings.KEY_STORAGE, src);
         movePrefFrom(prefMap, CameraSettings.KEY_VOLUME_KEY_MODE, src);
         movePrefFrom(prefMap, CameraSettings.KEY_POWER_KEY_SHUTTER, src);
         movePrefFrom(prefMap, CameraSettings.KEY_CAMERA_FIRST_USE_HINT_SHOWN, src);
@@ -152,6 +153,7 @@ public class ComboPreferences implements
                 || key.equals(CameraSettings.KEY_TRUE_VIEW)
                 || key.equals(CameraSettings.KEY_VOLUME_KEY_MODE)
                 || key.equals(CameraSettings.KEY_POWER_KEY_SHUTTER)
+                || key.equals(CameraSettings.KEY_STORAGE)
                 || key.equals(CameraSettings.KEY_CAMERA_FIRST_USE_HINT_SHOWN)
                 || key.equals(CameraSettings.KEY_VIDEO_FIRST_USE_HINT_SHOWN)
                 || key.equals(CameraSettings.KEY_VIDEO_EFFECT)

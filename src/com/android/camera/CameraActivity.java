@@ -40,6 +40,7 @@ import android.nfc.NfcEvent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -162,6 +163,7 @@ public class CameraActivity extends Activity
     private int mResultCodeForTesting;
     private Intent mResultDataForTesting;
     private OnScreenHint mStorageHint;
+    private String mStoragePath;
     private long mStorageSpaceBytes = Storage.LOW_STORAGE_THRESHOLD_BYTES;
     private boolean mAutoRotateScreen;
     private boolean mSecureCamera;
@@ -1397,8 +1399,23 @@ public class CameraActivity extends Activity
         return mAutoRotateScreen;
     }
 
+    protected boolean setStoragePath(SharedPreferences prefs) {
+        String storagePath = prefs.getString(CameraSettings.KEY_STORAGE,
+                Environment.getExternalStorageDirectory().toString());
+        Storage.getInstance().setRoot(storagePath);
+        if (storagePath.equals(mStoragePath)) {
+            return false;
+        }
+        mStoragePath = storagePath;
+        if (mDataAdapter != null) {
+            mDataAdapter.flush();
+            mDataAdapter.requestLoad(getContentResolver());
+        }
+        return true;
+    }
+
     protected void updateStorageSpace() {
-        mStorageSpaceBytes = Storage.getAvailableSpace();
+        mStorageSpaceBytes = Storage.getInstance().getAvailableSpace();
     }
 
     protected long getStorageSpaceBytes() {

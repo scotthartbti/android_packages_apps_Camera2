@@ -723,4 +723,7 @@
     <!-- Default value for power shutter - DO NOT TRANSLATE -->
     <string name="pref_power_key_shutter_default">off</string>
 
+    <!-- More Settings screen, storage title -->
+    <string name="pref_camera_storage_title">Storage</string>
+
 </resources>

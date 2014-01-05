@@ -32,6 +32,11 @@
 
     <!-- Enable ZSL -->
     <bool name="enableZSL">false</bool>
+
     <!-- Continues focus mode needs autofocus call -->
     <bool name="continuousFocusNeedsAutoFocusCall">false</bool>
+
+    <!-- Decode YV16 format on Samsung HDR hardware -->
+    <bool name="needsSamsungHDRFormat">false</bool>
+
 </resources>

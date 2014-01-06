@@ -429,7 +429,9 @@ public class VideoModule implements CameraModule,
         mPreferences.setLocalId(mActivity, mCameraId);
         CameraSettings.upgradeLocalPreferences(mPreferences.getLocal());
 
-        mActivity.setStoragePath(mPreferences);
+        if (mActivity.setStoragePath(mPreferences)) {
+            mActivity.updateStorageSpaceAndHint();
+        }
 
         mOrientationManager = new OrientationManager(mActivity);
 

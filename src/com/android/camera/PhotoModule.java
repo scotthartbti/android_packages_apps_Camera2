@@ -462,7 +462,9 @@ public class PhotoModule
         mPreferences.setLocalId(mActivity, mCameraId);
         CameraSettings.upgradeLocalPreferences(mPreferences.getLocal());
 
-        mActivity.setStoragePath(mPreferences);
+        if (mActivity.setStoragePath(mPreferences)) {
+            mActivity.updateStorageSpaceAndHint();
+        }
 
         // we need to reset exposure for the preview
         resetExposureCompensation();

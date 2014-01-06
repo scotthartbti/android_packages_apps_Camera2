@@ -220,7 +220,8 @@ public class Storage {
     }
 
     public long getAvailableSpace() {
-        String state = Environment.getExternalStorageState();
+        File dir = new File(generateDirectory());
+        String state = Environment.getStorageState(dir);
         Log.d(TAG, "External storage state=" + state);
         if (Environment.MEDIA_CHECKING.equals(state)) {
             return PREPARING;
@@ -229,7 +230,6 @@ public class Storage {
             return UNAVAILABLE;
         }
 
-        File dir = new File(generateDirectory());
         dir.mkdirs();
         if (!dir.isDirectory() || !dir.canWrite()) {
             return UNAVAILABLE;

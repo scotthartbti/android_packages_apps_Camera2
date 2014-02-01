@@ -115,12 +115,18 @@ public class CameraUtil {
 
     private static boolean sEnableZSL;
 
+    private static boolean sCancelAutoFocusOnPreviewStopped;
+
     // Fields for the show-on-maps-functionality
     private static final String MAPS_PACKAGE_NAME = "com.google.android.apps.maps";
     private static final String MAPS_CLASS_NAME = "com.google.android.maps.MapsActivity";
 
     public static boolean isZSLEnabled() {
         return sEnableZSL;
+    }
+
+    public static boolean cancelAutoFocusOnPreviewStopped() {
+        return sCancelAutoFocusOnPreviewStopped;
     }
 
     /** Has to be in sync with the receiving MovieActivity. */
@@ -204,6 +210,8 @@ public class CameraUtil {
         sImageFileNamer = new ImageFileNamer(
                 context.getString(R.string.image_file_name_format));
         sEnableZSL = context.getResources().getBoolean(R.bool.enableZSL);
+        sCancelAutoFocusOnPreviewStopped =
+                context.getResources().getBoolean(R.bool.cancelAutoFocusOnPreviewStopped);
         sSamsungCamMode = context.getResources().getBoolean(R.bool.needsSamsungCamMode);
         sEarlyVideoSize = context.getResources().getBoolean(R.bool.needsEarlyVideoSize);
         sContinuousFocusNeedsAutoFocusCall =
